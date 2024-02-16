@@ -65,6 +65,15 @@ try:
     );
     """)
 
+    cursor.execute("""
+    CREATE TABLE Order_Items (
+        ID SERIAL PRIMARY KEY,
+        Order_ID INTEGER REFERENCES Customer_Order(ID),
+        Menu_Item_ID INTEGER REFERENCES Menu_Item(ID),
+        Quantity INTEGER NOT NULL CHECK (Quantity > 0)
+    );
+    """)
+
     conn.commit()
     conn.close()
 
