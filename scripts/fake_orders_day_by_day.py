@@ -38,7 +38,6 @@ for single_date in (start_date + timedelta(n) for n in range((end_date - start_d
         print(f"Orders already exist for {single_date.strftime('%Y-%m-%d')}. Skipping.")
         continue
 
-    customer_orders = []
     order_items = []
     daily_order_count = random.randint(350, 550)
     for _ in range(daily_order_count):
@@ -46,25 +45,24 @@ for single_date in (start_date + timedelta(n) for n in range((end_date - start_d
         employee_id = random.choice(employees)
         order_timestamp = datetime.combine(single_date, datetime.min.time()) + timedelta(hours=random.randint(8, 17),
                                                                                          minutes=random.randint(0, 59))
-        customer_orders.append((employee_id, order_timestamp, 'Completed', customer_name))
 
-    cursor.executemany("""
-        INSERT INTO Customer_Order (Employee_ID, Created_At, Status, Name)
-        VALUES (%s, %s, %s, %s) RETURNING ID;
-    """, customer_orders)
-    order_ids = cursor.fetchall()
+        cursor.execute("""
+            INSERT INTO Customer_Order (Employee_ID, Created_At, Status, Name)
+            VALUES (%s, %s, %s, %s) RETURNING ID;
+        """, (employee_id, order_timestamp, 'Completed', customer_name))
+        order_id = cursor.fetchone()[0]
 
-    for order_id_tuple in order_ids:
-        order_id = order_id_tuple[0]
         for _ in range(random.randint(1, 6)):
             menu_item_id = random.choice(menu_items)
             quantity = random.randint(1, 3)
             order_items.append((order_id, menu_item_id, quantity))
 
-    cursor.executemany("""
-        INSERT INTO Order_Items (Order_ID, Menu_Item_ID, Quantity) 
-        VALUES (%s, %s, %s);
-    """, order_items)
+    # Insert order items in batches
+    if order_items:
+        cursor.executemany("""
+            INSERT INTO Order_Items (Order_ID, Menu_Item_ID, Quantity) 
+            VALUES (%s, %s, %s);
+        """, order_items)
 
     order_count += daily_order_count
     conn.commit()
@@ -72,4 +70,5 @@ for single_date in (start_date + timedelta(n) for n in range((end_date - start_d
 
 cursor.close()
 conn.close()
+
 print(f"Completed. Generated a total of {order_count} orders and inserted them into the database.")
