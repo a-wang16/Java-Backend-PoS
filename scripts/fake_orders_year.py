@@ -26,7 +26,7 @@ end_date = datetime.now()
 start_date = end_date - timedelta(days=365)
 
 for single_date in (start_date + timedelta(n) for n in range((end_date - start_date).days)):
-    num_orders = random.randint(5, 20)
+    num_orders = random.randint(350, 550)
     for _ in range(num_orders):
         customer_name = fake.name()
 
@@ -43,7 +43,7 @@ for single_date in (start_date + timedelta(n) for n in range((end_date - start_d
 
         order_id = cursor.fetchone()[0]
 
-        num_items = random.randint(1, 5)
+        num_items = random.randint(1, 6)
         for _ in range(num_items):
             menu_item_id = random.choice(menu_items)[0]
 
@@ -54,7 +54,7 @@ for single_date in (start_date + timedelta(n) for n in range((end_date - start_d
                 VALUES (%s, %s, %s);
             """, (order_id, menu_item_id, quantity))
 
-        conn.commit()
+    conn.commit()
 
 cursor.close()
 conn.close()
