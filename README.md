@@ -13,3 +13,9 @@ To connect to the database:
 psql -h csce-315-db.engr.tamu.edu -U csce315_902_02_user -d csce315_902_02_db
 ```
 password: password123
+
+```
+COPY (SELECT name FROM teams )
+    TO '/your_custom_path/test_file.csv'
+    WITH (FORMAT CSV, HEADER);
+```
