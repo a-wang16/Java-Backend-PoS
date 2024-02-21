@@ -220,6 +220,6 @@ SELECT SUM(mi.price) as price FROM Menu_item mi;
 Query 18
 Getting low stock items
 ```postgresql
-SELECT name, quantity FROM inventory WHERE quantity < 30
+SELECT name, quantity FROM inventory WHERE quantity < 30;
 ```
 
