@@ -7,3 +7,9 @@ pip install -r requirements.txt
 ```
 
 This will install the needed packages, and create an isolated environment for the project.
+
+To connect to the database:
+```bash
+psql -h csce-315-db.engr.tamu.edu -U csce315_902_02_user -d csce315_902_02_db
+```
+password: password123
