@@ -1,0 +1,42 @@
+ID,Menu_Item_ID,Menu_Item_Name,Inventory_ID,Inventory_Item_Name,QTY
+1,1,Rev's Burger,1,Patty,1
+2,1,Rev's Burger,2,American Cheese,1
+3,1,Rev's Burger,3,Gig 'em Sauce,1
+4,1,Rev's Burger,4,Pickle,3
+5,1,Rev's Burger,14,Buns,1
+6,2,Double Stack Cheese Burger,1,Patty,2
+7,2,Double Stack Cheese Burger,2,American Cheese,2
+8,2,Double Stack Cheese Burger,3,Gig 'em Sauce,1
+9,2,Double Stack Cheese Burger,4,Pickle,3
+10,2,Double Stack Cheese Burger,14,Buns,1
+11,3,Classic Burger,5,Lettuce,1
+12,3,Classic Burger,6,Tomato,1
+13,3,Classic Burger,4,Pickle,1
+14,3,Classic Burger,7,Onion,1
+15,3,Classic Burger,14,Buns,1
+16,4,Bacon Cheeseburger,2,American Cheese,1
+17,4,Bacon Cheeseburger,8,Bacon,1
+18,4,Bacon Cheeseburger,14,Buns,1
+19,5,Three Tender Basket,9,Chicken Tender,3
+20,5,Three Tender Basket,10,Seasoned Fries,1
+21,5,Three Tender Basket,11,Texas Toast,1
+22,5,Three Tender Basket,12,Gravy,1
+23,6,Four Steak Finger Basket,17,Basket,4
+24,6,Four Steak Finger Basket,10,Seasoned Fries,1
+25,6,Four Steak Finger Basket,11,Texas Toast,1
+26,6,Four Steak Finger Basket,12,Gravy,1
+27,7,Gig 'Em Patty Melt,1,Patty,1
+28,7,Gig 'Em Patty Melt,11,Texas Toast,1
+29,7,Gig 'Em Patty Melt,3,Gig 'em Sauce,1
+30,7,Gig 'Em Patty Melt,7,Onion,1
+31,7,Gig 'Em Patty Melt,13,American Swiss Cheese,1
+32,8,Howdy Spicy Ranch Chicken Strip Sandwich,9,Chicken Tender,1
+33,8,Howdy Spicy Ranch Chicken Strip Sandwich,14,Bun,1
+34,8,Howdy Spicy Ranch Chicken Strip Sandwich,15,Spicy Ranch Sauce,1
+35,8,Howdy Spicy Ranch Chicken Strip Sandwich,16,Pepper Jack Cheese,1
+36,9,Classic Crispy or Grilled Chicken Tender Sandwich,4,Pickle,1
+37,9,Classic Crispy or Grilled Chicken Tender Sandwich,5,Lettuce,1
+38,9,Classic Crispy or Grilled Chicken Tender Sandwich,6,Tomato,1
+39,9,Classic Crispy or Grilled Chicken Tender Sandwich,7,Onion,1
+40,10,Grilled Cheese,2,American Cheese,1
+41,10,Grilled Cheese,11,Texas Toast,1
