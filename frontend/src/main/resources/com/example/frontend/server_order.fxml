@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="your.package.ServerOrderViewController">
+    <VBox spacing="10">
+        <HBox>
+            <Button text="☰" />
+            <Text text="Server Name Profile" />
+        </HBox>
+        <HBox>
+            <ScrollPane fitToWidth="true">
+                <VBox>
+                    <Text text="Burgers" />
+                    <!-- Add buttons or images for burger items here -->
+                    <Text text="Salads" />
+                    <!-- Add buttons or images for salad items here -->
+                    <Text text="Sandwiches" />
+                    <!-- Add buttons or images for sandwich items here -->
+                </VBox>
+            </ScrollPane>
+            <VBox>
+                <Text text="Order Summary" />
+                <!-- Add dynamic list for order summary here -->
+                <HBox>
+                    <Text text="Total: $" />
+                    <!-- Total amount will be dynamically updated -->
+                </HBox>
+                <HBox>
+                    <Button text="Cancel" />
+                    <Button text="Submit / Pay" />
+                </HBox>
+            </VBox>
+        </HBox>
+    </VBox>
+</AnchorPane>
