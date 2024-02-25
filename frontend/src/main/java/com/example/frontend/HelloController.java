@@ -24,7 +24,7 @@ public class HelloController {
 
     @FXML
     private void switchToManagerView() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("manager-view.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("manager-graph-view.fxml"));
         Parent root = loader.load();
 
         Stage stage = (Stage) switchViewButton.getScene().getWindow();
