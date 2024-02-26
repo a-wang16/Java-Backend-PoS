@@ -62,7 +62,7 @@
                                         <Insets bottom="5.0" top="5.0" />
                                     </padding>
                                 </Button>
-                                <Button layoutX="113.0" layoutY="86.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="157.0" style="-fx-background-color: black; -fx-background-radius: 0px; -fx-text-fill: #ffffff; -fx-font-size: 17px; -fx-font-weight: 500;" text="Submit/Pay" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="30.0">
+                                <Button layoutX="113.0" layoutY="86.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="157.0" onMouseClicked="#complete_order" style="-fx-background-color: black; -fx-background-radius: 0px; -fx-text-fill: #ffffff; -fx-font-size: 17px; -fx-font-weight: 500;" text="Submit/Pay" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="30.0">
                                     <font>
                                         <Font size="18.0" />
                                     </font>

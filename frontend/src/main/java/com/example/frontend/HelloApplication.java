@@ -12,6 +12,10 @@ public class HelloApplication extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("gemma.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 640, 480);
+
+        MainSceneController controller = fxmlLoader.getController();
+        controller.setPrimaryStage(stage); // Pass the stage to the controller
+
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();
