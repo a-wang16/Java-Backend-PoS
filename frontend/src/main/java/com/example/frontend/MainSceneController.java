@@ -125,12 +125,14 @@ public class MainSceneController implements Initializable{
         String database_url = String.format("jdbc:postgresql://csce-315-db.engr.tamu.edu/%s", database_name);
         try {
             conn = DriverManager.getConnection(database_url, database_user, database_password);
+            System.out.println("Successfully connected to database.");
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println(e.getClass().getName()+": "+e.getMessage());
             System.exit(0);
+            System.out.println("Could not connect to database.");
         }
-        System.out.println("Connected Successfully");
+
 
         String name = "";
         String category = "";
@@ -200,8 +202,10 @@ public class MainSceneController implements Initializable{
 
         try {
             conn.close();
+            System.out.println("Database closed successfully.");
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println("Error in closing database.");
         }
     }
 }
