@@ -1,21 +1,30 @@
 package com.example.frontend;
 
 import java.net.URL;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
-
+//
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -28,9 +37,12 @@ public class MainSceneController implements Initializable{
     private ImageView menu_open;
     @FXML
     private AnchorPane slide_menu;
-    
-    private Stage primaryStage;
+    @FXML
+    private AnchorPane menu_pane;
+    @FXML
+    private ScrollPane menu_scroll;
 
+    private Stage primaryStage;
 
     @FXML
     void close_menu(MouseEvent event) {
@@ -64,7 +76,6 @@ public class MainSceneController implements Initializable{
             menu_close.setVisible(true);
             menu_open.setVisible(false);
         });
-
     }
 
     public void setPrimaryStage(Stage primaryStage) {
@@ -101,9 +112,95 @@ public class MainSceneController implements Initializable{
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
+        // initializing the vertical menu
         menu_close.setVisible(false);
         menu_open.setVisible(true);
         slide_menu.setTranslateX(-100);
-    }
 
+        // connecting to the database
+        Connection conn = null;
+        String database_name = "csce315_902_02_db";
+        String database_user = "csce315_902_02_user";
+        String database_password = "password123";
+        String database_url = String.format("jdbc:postgresql://csce-315-db.engr.tamu.edu/%s", database_name);
+        try {
+            conn = DriverManager.getConnection(database_url, database_user, database_password);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            System.exit(0);
+        }
+        System.out.println("Connected Successfully");
+
+        String name = "";
+        String category = "";
+        ArrayList<String> categories = new ArrayList<String>();
+        ArrayList<VBox> menu_categories = new ArrayList<VBox>();
+        VBox menu_layout = new VBox();
+        try{
+            //Asking for all of the menu items from the database
+            Statement stmt = conn.createStatement();
+            String sqlStatement = "SELECT * FROM menu_item;";
+            ResultSet result = stmt.executeQuery(sqlStatement);
+
+            while (result.next()) {
+                name = result.getString("name");
+                category = result.getString("category");
+
+                // seeing if we already have the category that this menu item is a part of
+                int index = categories.indexOf(category);
+
+                // we do not have the category made, make a new one and add it to the list
+                if (index == -1){
+                    categories.add(category);
+
+                    // New Vbox to hold the ti
+                    VBox add_VBox = new VBox();
+                    add_VBox.setStyle("-fx-background-color: #fbfbfb;");
+                    add_VBox.setPrefWidth(650);// prefWidth
+                    add_VBox.setSpacing(10);
+
+                    // New label displaying which category it is
+                    Label add_Label = new Label(category);
+                    add_Label.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 16));
+
+                    // New tile pane to hold food items within
+                    TilePane new_pane = new TilePane();
+                    new_pane.setPrefColumns(4);
+                    new_pane.setHgap(40);
+                    new_pane.setVgap(20);
+
+                    // adding the children to the container
+                    add_VBox.getChildren().add(add_Label);
+                    add_VBox.getChildren().add(new_pane);
+
+                    // adding the container to the page
+                    menu_categories.add(add_VBox);
+                    index = categories.indexOf(category);
+                    menu_layout.getChildren().add(add_VBox);
+                }
+
+                // creating a new button with the menu item and adding it to the appropriate category
+                Button btn = new Button(name);
+                btn.setPrefHeight(120);
+                btn.setPrefWidth(120);
+                btn.wrapTextProperty().setValue(true);
+                btn.setTextAlignment(TextAlignment.CENTER);
+                btn.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 12));
+                menu_categories.get(index).getChildren().add(btn);
+            }
+
+            menu_scroll.setContent(menu_layout);
+            menu_layout.setSpacing(70);
+            menu_layout.setPadding(new Insets(60, 60, 60, 60));
+        } catch (Exception e){
+            System.out.println("Error accessing Database.");
+        }
+
+        try {
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -70,7 +70,7 @@
                                         <Insets bottom="5.0" top="5.0" />
                                     </padding>
                                 </Button>
-                                <Button layoutX="16.0" layoutY="36.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="284.0" style="-fx-background-color: #61905a; -fx-background-radius: 0px; -fx-text-fill: #ffffff; -fx-font-size: 17px; -fx-font-weight: 500; -fx-alignment: left;" text="Total" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="30.0">
+                                <Button layoutX="16.0" layoutY="36.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="284.0" style="-fx-background-color: #61905a; -fx-background-radius: 0px; -fx-text-fill: #ffffff; -fx-font-size: 17px; -fx-font-weight: 500;" text="Total" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="30.0">
                                     <font>
                                         <Font name="System Bold" size="13.0" />
                                     </font>
