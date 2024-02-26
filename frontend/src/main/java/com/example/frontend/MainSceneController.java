@@ -138,6 +138,7 @@ public class MainSceneController implements Initializable{
         String category = "";
         ArrayList<String> categories = new ArrayList<String>();
         ArrayList<VBox> menu_categories = new ArrayList<VBox>();
+        ArrayList<TilePane> menu_tilePanes = new ArrayList<TilePane>();
         VBox menu_layout = new VBox();
         try{
             //Asking for all of the menu items from the database
@@ -178,6 +179,7 @@ public class MainSceneController implements Initializable{
 
                     // adding the container to the page
                     menu_categories.add(add_VBox);
+                    menu_tilePanes.add(new_pane);
                     index = categories.indexOf(category);
                     menu_layout.getChildren().add(add_VBox);
                 }
@@ -189,7 +191,7 @@ public class MainSceneController implements Initializable{
                 btn.wrapTextProperty().setValue(true);
                 btn.setTextAlignment(TextAlignment.CENTER);
                 btn.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 12));
-                menu_categories.get(index).getChildren().add(btn);
+                menu_tilePanes.get(index).getChildren().add(btn);
             }
 
             menu_scroll.setContent(menu_layout);
