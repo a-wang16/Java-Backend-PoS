@@ -194,6 +194,7 @@ public class MainSceneController implements Initializable{
             menu_layout.setSpacing(70);
             menu_layout.setPadding(new Insets(60, 60, 60, 60));
         } catch (Exception e){
+            e.printStackTrace();
             System.out.println("Error accessing Database.");
         }
 
