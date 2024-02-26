@@ -1,21 +1,21 @@
-ID,Recipe_ID,Name,Price,Calories
-1,1,Rev's Burger,5.59,790
-2,2,Double Stack Cheese Burger,8.79,940
-3,3,Classic Burger,5.49,510
-4,4,Bacon Cheeseburger,6.99,600
-5,5,Three Tender Basket,6.79,900
-6,6,Four Steak Finger Basket,7.29,960
-7,7,Gig 'Em Patty Melt,6.29,820
-8,8,Howdy Spicy Ranch Chicken Strip Sandwich,6.99,790
-9,9,Classic Crispy or Grilled Chicken Tender Sandwich,5.79,660
-10,10,Grilled Cheese,3.49,580
-11,11,House Salad,6.5,450
-12,12,Aggie Shake,3.99,380
-13,13,Chicken Caesar Salad,6.5,425
-14,14,Regular Fountain Drink,1.85,240
-15,15,Chicken Garden Salad,6.5,450
-16,16,Classic Cheeseburger,6.5,600
-17,21,Grilled Cheese Dog,3.99,250
-18,18,Cookie Dough Shake,3.99,400
-19,19,Grilled Hot Dog,2.99,175
-20,20,Onion Rings,2.99,200
+ID,Recipe_ID,Name,Price,Calories,Category
+1,1,Rev's Burger,5.59,790,Burgers
+2,2,Double Stack Cheese Burger,8.79,940,Burgers
+3,3,Classic Burger,5.49,510,Burgers
+4,4,Bacon Cheeseburger,6.99,600,Burgers
+5,5,Three Tender Basket,6.79,900,Baskets
+6,6,Four Steak Finger Basket,7.29,960,Baskets
+7,7,Gig 'Em Patty Melt,6.29,820,Sandwiches
+8,8,Howdy Spicy Ranch Chicken Strip Sandwich,6.99,790,Sandwiches
+9,9,Classic Crispy or Grilled Chicken Tender Sandwich,5.79,660,Sandwiches
+10,10,Grilled Cheese,3.49,580,Sandwiches
+11,11,House Salad,6.5,450,Salads
+12,12,Aggie Shake,3.99,380,Drinks
+13,13,Chicken Caesar Salad,6.5,425,Salads
+14,14,Regular Fountain Drink,1.85,240,Drinks
+15,15,Chicken Garden Salad,6.5,450,Salads
+16,16,Classic Cheeseburger,6.5,600,Burgers
+17,21,Grilled Cheese Dog,3.99,250,Sandwiches
+18,18,Cookie Dough Shake,3.99,400,Drinks
+19,19,Grilled Hot Dog,2.99,175,Sandwiches
+20,20,Onion Rings,2.99,200,Baskets
