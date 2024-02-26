@@ -18,13 +18,13 @@ with open(csv_file_path, newline='') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
         cursor.execute("""
-            INSERT INTO Menu_Item (ID, Name, Price, Calories) 
-            VALUES (%s, %s, %s, %s)
+            INSERT INTO Menu_Item (ID, Name, Price, Calories, Category) 
+            VALUES (%s, %s, %s, %s, %s)
             ON CONFLICT (ID) DO UPDATE 
             SET Name = EXCLUDED.Name, 
                 Price = EXCLUDED.Price, 
                 Calories = EXCLUDED.Calories;
-        """, (row['ID'], row['Name'], row['Price'], row['Calories']))
+        """, (row['ID'], row['Name'], row['Price'], row['Calories'], row['Category']))
 
 conn.commit()
 cursor.close()

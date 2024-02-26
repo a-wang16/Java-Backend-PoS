@@ -25,7 +25,8 @@ try:
         ID SERIAL PRIMARY KEY,
         Name VARCHAR(255) NOT NULL,
         Price DECIMAL(10, 2) NOT NULL,
-        Calories INTEGER NOT NULL
+        Calories INTEGER NOT NULL,
+        Category VARCHAR(255) NOT NULL
     );
     """)
 
