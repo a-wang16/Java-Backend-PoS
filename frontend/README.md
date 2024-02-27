@@ -9,3 +9,5 @@ Also, try this maybe
 ```bash
 mvn clean install -U
 ```
+
+In order to connect to database, make sure you have config.properties file under frontend/src/main
