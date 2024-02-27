@@ -55,7 +55,7 @@ public class MainSceneController implements Initializable{
 
     private Properties readProperties() {
         Properties prop = new Properties();
-        try (InputStream input = new FileInputStream("frontend/src/main/config.properties")) {
+        try (InputStream input = HelloApplication.class.getResourceAsStream("config.properties")) {
             prop.load(input);
         } catch (IOException ex) {
             ex.printStackTrace();
