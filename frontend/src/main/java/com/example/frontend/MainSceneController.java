@@ -1,8 +1,12 @@
 package com.example.frontend;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.ResourceBundle;
 //
 import javafx.animation.TranslateTransition;
@@ -43,6 +47,16 @@ public class MainSceneController implements Initializable{
     private ScrollPane menu_scroll;
 
     private Stage primaryStage;
+
+    private Properties readProperties() {
+        Properties prop = new Properties();
+        try (InputStream input = new FileInputStream("frontend/src/main/config.properties")) {
+            prop.load(input);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return prop;
+    }
 
     @FXML
     void close_menu(MouseEvent event) {
@@ -117,12 +131,17 @@ public class MainSceneController implements Initializable{
         menu_open.setVisible(true);
         slide_menu.setTranslateX(-100);
 
+        Properties prop = readProperties();
+
         // connecting to the database
         Connection conn = null;
-        String database_name = "csce315_902_02_db";
-        String database_user = "csce315_902_02_user";
-        String database_password = "password123";
-        String database_url = String.format("jdbc:postgresql://csce-315-db.engr.tamu.edu/%s", database_name);
+
+        String database_name = prop.getProperty("database.name");
+        String database_user = prop.getProperty("database.user");
+        String database_password = prop.getProperty("database.password");
+        String database_host = prop.getProperty("database.host");
+        String database_url = String.format("jdbc:postgresql://%s/%s", database_host, database_name);
+        
         try {
             conn = DriverManager.getConnection(database_url, database_user, database_password);
             System.out.println("Successfully connected to database.");
