@@ -10,4 +10,12 @@ Also, try this maybe
 mvn clean install -U
 ```
 
-In order to connect to database, make sure you have config.properties file under frontend/src/main
+In order to connect to database, make sure you have `config.properties` file under `frontend/src/main/resources`.
+
+Install maven through https://maven.apache.org/download.cgi and follow the instructions to put it under your `PATH` variable (https://maven.apache.org/install.html)
+
+Once maven is installed, simply run the following command:
+
+```bash
+mvn clean javafx:run
+```
