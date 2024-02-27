@@ -178,7 +178,6 @@ public class MainSceneController implements Initializable{
 
                     // New Vbox to hold the ti
                     VBox add_VBox = new VBox();
-                    add_VBox.setStyle("-fx-background-color: #fbfbfb;");
                     add_VBox.setPrefWidth(650);// prefWidth
                     add_VBox.setSpacing(10);
 
