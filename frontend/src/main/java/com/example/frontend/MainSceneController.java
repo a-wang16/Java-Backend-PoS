@@ -12,9 +12,11 @@ import java.util.ResourceBundle;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -46,6 +48,8 @@ public class MainSceneController implements Initializable{
     @FXML
     private ScrollPane menu_scroll;
 
+    @FXML
+    private ImageView switchBtn;
     private Stage primaryStage;
 
     private Properties readProperties() {
@@ -56,6 +60,21 @@ public class MainSceneController implements Initializable{
             ex.printStackTrace();
         }
         return prop;
+    }
+
+    @FXML
+    void switchButton(MouseEvent event) {
+        System.out.println("Switch");
+//        try {
+//            FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("manager-graph-view.fxm"));
+//            Parent root = loader.load();
+//            Stage stage = (Stage) switchBtn.getScene().getWindow();
+//
+//            stage.setScene(new Scene(root));
+////            stage.show();
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     @FXML
