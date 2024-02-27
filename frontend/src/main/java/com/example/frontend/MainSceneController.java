@@ -51,6 +51,7 @@ public class MainSceneController implements Initializable{
     @FXML
     private ImageView switchBtn;
     private Stage primaryStage;
+    private Boolean employeeView;
 
     private Properties readProperties() {
         Properties prop = new Properties();
@@ -64,17 +65,28 @@ public class MainSceneController implements Initializable{
 
     @FXML
     void switchButton(MouseEvent event) {
-        System.out.println("Switch");
-//        try {
-//            FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("manager-graph-view.fxm"));
-//            Parent root = loader.load();
-//            Stage stage = (Stage) switchBtn.getScene().getWindow();
-//
-//            stage.setScene(new Scene(root));
-////            stage.show();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+        try {
+            Stage stage = (Stage) switchBtn.getScene().getWindow();
+
+            String name = "";
+            if (employeeView){
+                System.out.println("Switching to manager");
+                name = "manager-view.fxml";
+                employeeView = false;
+            }
+            else{
+                System.out.println("Switching to employee");
+                name = "gemma.fxml";
+                employeeView = true;
+            }
+            FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource(name));
+            Parent root = loader.load();
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @FXML
@@ -145,6 +157,8 @@ public class MainSceneController implements Initializable{
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
+        employeeView = true;
+
         // initializing the vertical menu
         menu_close.setVisible(false);
         menu_open.setVisible(true);
