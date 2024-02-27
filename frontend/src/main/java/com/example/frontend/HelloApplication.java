@@ -15,8 +15,6 @@ public class HelloApplication extends Application {
 
         MainSceneController controller = fxmlLoader.getController();
         controller.setPrimaryStage(stage); // Pass the stage to the controller
-
-        stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();
     }

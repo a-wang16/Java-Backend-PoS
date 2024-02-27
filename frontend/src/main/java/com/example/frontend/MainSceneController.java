@@ -12,9 +12,11 @@ import java.util.ResourceBundle;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -46,7 +48,10 @@ public class MainSceneController implements Initializable{
     @FXML
     private ScrollPane menu_scroll;
 
+    @FXML
+    private ImageView switchBtn;
     private Stage primaryStage;
+    private Boolean employeeView;
 
     private Properties readProperties() {
         Properties prop = new Properties();
@@ -56,6 +61,32 @@ public class MainSceneController implements Initializable{
             ex.printStackTrace();
         }
         return prop;
+    }
+
+    @FXML
+    void switchButton(MouseEvent event) {
+        try {
+            Stage stage = (Stage) switchBtn.getScene().getWindow();
+
+            String name = "";
+            if (employeeView){
+                System.out.println("Switching to manager");
+                name = "manager-view.fxml";
+                employeeView = false;
+            }
+            else{
+                System.out.println("Switching to employee");
+                name = "gemma.fxml";
+                employeeView = true;
+            }
+            FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource(name));
+            Parent root = loader.load();
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @FXML
@@ -126,6 +157,8 @@ public class MainSceneController implements Initializable{
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
+        employeeView = true;
+
         // initializing the vertical menu
         menu_close.setVisible(false);
         menu_open.setVisible(true);
@@ -178,7 +211,6 @@ public class MainSceneController implements Initializable{
 
                     // New Vbox to hold the ti
                     VBox add_VBox = new VBox();
-                    add_VBox.setStyle("-fx-background-color: #fbfbfb;");
                     add_VBox.setPrefWidth(650);// prefWidth
                     add_VBox.setSpacing(10);
 
