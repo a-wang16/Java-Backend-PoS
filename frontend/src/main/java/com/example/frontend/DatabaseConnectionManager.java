@@ -10,7 +10,7 @@ import java.io.InputStream;
 public class DatabaseConnectionManager {
     private static Connection connection = null;
 
-    private DatabaseConnectionManager() { // Private constructor
+    private DatabaseConnectionManager() {
     }
 
     public static Connection getConnection() {

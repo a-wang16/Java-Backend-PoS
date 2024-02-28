@@ -171,7 +171,6 @@ public class MainSceneController implements Initializable{
         // connecting to the database
         Connection conn = DatabaseConnectionManager.getConnection();
 
-
         String name = "";
         String category = "";
         ArrayList<String> categories = new ArrayList<String>();
@@ -238,6 +237,5 @@ public class MainSceneController implements Initializable{
             e.printStackTrace();
             System.out.println("Error accessing Database.");
         }
-
     }
 }
