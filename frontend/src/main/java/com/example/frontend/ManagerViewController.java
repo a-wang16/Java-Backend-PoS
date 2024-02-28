@@ -69,7 +69,11 @@ public class ManagerViewController implements Initializable{
     private ImageView switchBtn;
     private Boolean employeeView;
     
+    @FXML
+    private Button updateInventoryButton;
 
+    @FXML
+    private Button updateMenuButton;
 
     @FXML
     private Button switchSceneBtn;
@@ -98,11 +102,7 @@ public class ManagerViewController implements Initializable{
         }
     }
 
-
-
-
-    @FXML
-    private Button updateInventoryButton;
+    
 
     @FXML
     void switchButton(MouseEvent event) {
@@ -147,7 +147,7 @@ public class ManagerViewController implements Initializable{
         inventoryFieldUnit.setPromptText("Enter Item Unit");
 
         Button saveButton = new Button("Save");
-        saveButton.setOnAction(e -> handleSaveAction(inventoryFieldName.getText(), inventoryFieldQuantity.getText(), inventoryFieldUnit.getText(), modalStage));
+        saveButton.setOnAction(e -> handleInventorySaveAction(inventoryFieldName.getText(), inventoryFieldQuantity.getText(), inventoryFieldUnit.getText(), modalStage));
 
         modalVBox.getChildren().addAll(instructionLabel, inventoryFieldName, inventoryFieldQuantity, inventoryFieldUnit, saveButton);
 
@@ -157,7 +157,38 @@ public class ManagerViewController implements Initializable{
         modalStage.showAndWait();
     }
 
-    private void handleSaveAction(String name, String quantity, String unit, Stage modalStage) {
+    @FXML
+    void handleUpdateMenuButton(ActionEvent event) {
+        Stage modalStage = new Stage();
+        modalStage.initModality(Modality.APPLICATION_MODAL); // Block interaction with other windows
+        modalStage.setTitle("Update Menu");
+
+        // Define the modal content
+        VBox modalVBox = new VBox(10);
+        modalVBox.setPadding(new Insets(10));
+        Label instructionLabel = new Label("Enter Menu Details:");
+        TextField name = new TextField();
+        TextField price = new TextField();
+        TextField calories = new TextField();
+        TextField category = new TextField();
+
+        name.setPromptText("Enter Item Name");
+        price.setPromptText("Enter Item Price");
+        calories.setPromptText("Enter Item Calories");
+        category.setPromptText("Enter Item Category");
+
+        Button saveButton = new Button("Save");
+        saveButton.setOnAction(e -> handleMenuSaveAction(name.getText(), price.getText(), calories.getText(), category.getText(), modalStage));
+
+        modalVBox.getChildren().addAll(instructionLabel, name, price, calories, category, saveButton);
+
+        // Show the modal window
+        Scene modalScene = new Scene(modalVBox, 300, 300);
+        modalStage.setScene(modalScene);
+        modalStage.showAndWait();
+    }
+
+    private void handleInventorySaveAction(String name, String quantity, String unit, Stage modalStage) {
         // Handle the save action (e.g., print inventory details)
         System.out.println("Updating Inventory Item:");
         System.out.println("Name: " + name);
@@ -199,6 +230,49 @@ public class ManagerViewController implements Initializable{
             modalStage.close();
         }
     }
+
+    private void handleMenuSaveAction(String name, String price, String calories, String category, Stage modalStage) {
+        System.out.println("Updating Menu Item:");
+        System.out.println("Name: " + name);
+        System.out.println("Price: " + price);
+        System.out.println("Calories: " + calories);
+        System.out.println("Category: " + category);
+    
+        Connection conn = DatabaseConnectionManager.getConnection();
+    
+        try {
+            // Adjust the SQL statement according to your database schema
+            String sqlStatement = "UPDATE menu_item SET price = ?, calories = ?, category = ? WHERE name = ?;";
+    
+            PreparedStatement pstmt = conn.prepareStatement(sqlStatement);
+    
+            // Assuming 'price' and 'calories' are stored as decimals and integers in your database
+            pstmt.setDouble(1, Double.parseDouble(price));
+            pstmt.setInt(2, Integer.parseInt(calories));
+            pstmt.setString(3, category);
+            pstmt.setString(4, name);
+    
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Menu updated successfully.");
+            } else {
+                System.out.println("Menu update failed. No item found with the specified name.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Error accessing Database.");
+        } catch (NumberFormatException e) {
+            System.out.println("Error in number format: " + e.getMessage());
+        } finally {
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            modalStage.close();
+        }
+    }
+    
 
 
     @FXML
@@ -243,6 +317,8 @@ public class ManagerViewController implements Initializable{
         slide_menu.setTranslateX(-100);
         employeeView = false;
         updateInventoryButton.setOnAction(this::handleUpdateInventoryButton);
+        updateMenuButton.setOnAction(this::handleUpdateMenuButton);
+
         managerView = true;
     }
 

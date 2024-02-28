@@ -30,7 +30,7 @@
                      </children>
                         </AnchorPane>
                   <Button fx:id="updateInventoryButton" layoutX="165.0" layoutY="56.0" mnemonicParsing="false" text="Update Inventory" />
-                  <Button layoutX="60.0" layoutY="56.0" mnemonicParsing="false" text="Update Menu" />
+                  <Button fx:id="updateMenuButton" layoutX="60.0" layoutY="56.0" mnemonicParsing="false" text="Update Menu" />
                     </children>
                     <opaqueInsets>
                         <Insets left="10.0" />
