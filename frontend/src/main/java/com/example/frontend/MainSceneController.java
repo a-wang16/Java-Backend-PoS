@@ -10,6 +10,8 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 //
 import javafx.animation.TranslateTransition;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -36,6 +38,8 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import com.example.frontend.DatabaseConnectionManager;
+import com.example.frontend.DatabaseOperations.OrderItem;
+
 
 public class MainSceneController implements Initializable{
 
@@ -54,6 +58,31 @@ public class MainSceneController implements Initializable{
     private ImageView switchBtn;
     private Stage primaryStage;
     private Boolean employeeView;
+
+    private ObservableList<OrderItem> currentOrder = FXCollections.observableArrayList();
+
+    public void addItemToOrder(int menuItemId, int quantity) {
+        for (OrderItem item : currentOrder) {
+            if (item.getMenuItemId() == menuItemId) {
+                int newQuantity = item.getQuantity() + quantity;
+                currentOrder.set(currentOrder.indexOf(item), new OrderItem(menuItemId, newQuantity));
+                return;
+            }
+        }
+        currentOrder.add(new OrderItem(menuItemId, quantity));
+    }
+
+    public void removeItemFromOrder(int menuItemId) {
+        currentOrder.removeIf(item -> item.getMenuItemId() == menuItemId);
+    }
+
+    public void updateItemQuantityInOrder(int menuItemId, int newQuantity) {
+        currentOrder.removeIf(item -> item.getMenuItemId() == menuItemId);
+        if (newQuantity > 0) {
+            currentOrder.add(new OrderItem(menuItemId, newQuantity));
+        }
+    }
+
 
     private Properties readProperties() {
         Properties prop = new Properties();
