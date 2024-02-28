@@ -12,18 +12,15 @@ import java.util.ResourceBundle;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.control.Label;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
@@ -366,30 +363,73 @@ public class ManagerViewController implements Initializable{
         employeeView = false;
         updateInventoryButton.setOnAction(this::handleUpdateInventoryButton);
         updateMenuButton.setOnAction(this::handleUpdateMenuButton);
-
+        managerScroll.setPadding(new Insets(20, 20, 20, 20));
 
 
         // Variables to set from what was received from database
         String name = "";
         String quant = "";
+        String id = "";
 
         Connection conn = DatabaseConnectionManager.getConnection();
         // Array lists to keep track of elements in menu items
         VBox itemsVertical = new VBox(20);
+
+
         try {
             String sqlStatement = "SELECT * FROM inventory;";
             Statement stmt = conn.createStatement();
 
             ResultSet result = stmt.executeQuery(sqlStatement);
+            HBox toAdd = new HBox(20);
+            toAdd.setStyle("-fx-border-color: black");
+            toAdd.setPrefWidth(630);
+            toAdd.setPadding(new Insets(10, 10, 10, 10) );
+
+            Label nameLabel = new Label("Name");
+            Label idLabel = new Label("Id");
+            Label quantLabel = new Label("Qty");
+            CheckBox c = new CheckBox();
+
+            nameLabel.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 14));
+            idLabel.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 14));
+            quantLabel.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 14));
+
+            c.setPrefWidth(30);
+            nameLabel.setPrefWidth(400);
+            idLabel.setPrefWidth(30);
+            quantLabel.setPrefWidth(40);
+
+            toAdd.getChildren().addAll(c, idLabel, nameLabel, quantLabel);
+            itemsVertical.getChildren().add(toAdd);
 
             while (result.next()) {
                 name = result.getString("name");
                 quant = result.getString("quantity");
+                id = result.getString("id");
 
-                HBox toAdd = new HBox(20);
-                Label nameLabel = new Label(name);
-                Label quantLabel = new Label(quant);
-                toAdd.getChildren().addAll(nameLabel, quantLabel);
+                toAdd = new HBox(20);
+                toAdd.setStyle("-fx-border-color: black");
+                toAdd.setPrefWidth(500);
+                toAdd.setPadding(new Insets(10, 10, 10, 10) );
+
+
+
+                nameLabel = new Label(name);
+                idLabel = new Label(id);
+                quantLabel = new Label(quant);
+                c = new CheckBox();
+
+                nameLabel.setFont(Font.font("verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14));
+                idLabel.setFont(Font.font("verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14));
+                quantLabel.setFont(Font.font("verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14));
+
+                c.setPrefWidth(30);
+                nameLabel.setPrefWidth(400);
+                idLabel.setPrefWidth(30);
+                quantLabel.setPrefWidth(50);
+
+                toAdd.getChildren().addAll(c, idLabel, nameLabel, quantLabel);
                 itemsVertical.getChildren().add(toAdd);
             }
 //            testPane.getChildren().add(itemsVertical);
