@@ -72,13 +72,13 @@ public class ManagerGraphViewController implements Initializable{
 
             String name = "";
             if (employeeView){
-                System.out.println("Switching to manager");
-                name = "manager-view.fxml";
+                System.out.println("Switching to employee");
+                name = "gemma.fxml";
                 employeeView = false;
             }
             else{
-                System.out.println("Switching to employee");
-                name = "gemma.fxml";
+                System.out.println("Switching to manager");
+                name = "manager-view.fxml";
                 employeeView = true;
             }
             FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource(name));

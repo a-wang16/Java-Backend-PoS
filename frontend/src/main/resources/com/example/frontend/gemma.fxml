@@ -80,8 +80,9 @@
                                 </Button>
                             </children>
                         </AnchorPane>
-                        <Label layoutX="238.0" layoutY="561.0" prefHeight="20.0" prefWidth="60.0" style="-fx-font-size: 16px;" text="\$0.00" />
+                        <Label fx:id="orderTotal" layoutX="238.0" layoutY="561.0" prefHeight="20.0" prefWidth="60.0" style="-fx-font-size: 16px;" text="\$0.00" />
                         <Line endX="182.0" layoutX="129.0" layoutY="533.0" startX="-100.0" strokeWidth="0.6" AnchorPane.leftAnchor="28.5" AnchorPane.rightAnchor="32.5" />
+                  <ScrollPane fx:id="checkoutScroll" layoutX="30.0" layoutY="73.0" prefHeight="444.0" prefWidth="278.0" style="-fx-border-color: transparent;" />
                     </children>
                     <opaqueInsets>
                         <Insets left="10.0" />
