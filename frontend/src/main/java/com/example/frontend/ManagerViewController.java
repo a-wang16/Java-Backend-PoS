@@ -1,37 +1,41 @@
 package com.example.frontend;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Properties;
+import java.util.ResourceBundle;
+//
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
-
-import java.io.IOException;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Properties;
-import java.util.ResourceBundle;
-
-import javafx.fxml.FXML;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
+import com.example.frontend.DatabaseConnectionManager;
 
 public class ManagerViewController implements Initializable{
 
@@ -52,22 +56,23 @@ public class ManagerViewController implements Initializable{
 
     @FXML
     private Button switchSceneBtn;
+    @FXML
     private Boolean managerView;
     
     @FXML
-    void switchSceneButtonClicked(MouseEvent event) {
+    void switchSceneButtonClicked(ActionEvent event) {
         try {
             Stage stage = (Stage) switchSceneBtn.getScene().getWindow();
             String name = "";
             if (managerView){
-                name = "manager-view-graph.fxml";
-                employeeView = false;
+                name = "manager-graph-view.fxml";
+                managerView = false;
             }
             else{
-                name = "manager-view";
-                employeeView = true;
+                name = "manager-view.fxml";
+                managerView = true;
             }
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("manager-view-graph.fxml"));
+            FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource(name));
             Parent root = loader.load();
             stage.setScene(new Scene(root));
             stage.show();
@@ -144,6 +149,8 @@ public class ManagerViewController implements Initializable{
         menu_open.setVisible(true);
         slide_menu.setTranslateX(-100);
         employeeView = false;
+        managerView = true;
     }
+
 
 }
