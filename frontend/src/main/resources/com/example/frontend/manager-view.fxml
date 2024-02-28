@@ -250,7 +250,7 @@
                               <Label alignment="CENTER" layoutX="337.0" layoutY="32.0" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: #C5C5C5;" text="5" />
                            </children>
                         </Pane>
-                        <Button layoutX="688.0" layoutY="41.0" mnemonicParsing="false" text="View Graph" />
+                        <Button layoutX="688.0" layoutY="41.0" mnemonicParsing="false" text="View Graph" fx:id="switchSceneBtn" onAction="#switchSceneButtonClicked"/>
                      </children>
                   </AnchorPane>
                </children>

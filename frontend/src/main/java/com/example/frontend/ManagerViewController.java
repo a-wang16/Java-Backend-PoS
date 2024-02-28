@@ -1,15 +1,30 @@
 package com.example.frontend;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Properties;
+import java.util.ResourceBundle;
+//
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -37,6 +52,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import com.example.frontend.DatabaseConnectionManager;
+
 public class ManagerViewController implements Initializable{
 
     @FXML
@@ -51,6 +68,38 @@ public class ManagerViewController implements Initializable{
     @FXML
     private ImageView switchBtn;
     private Boolean employeeView;
+    
+
+
+    @FXML
+    private Button switchSceneBtn;
+    @FXML
+    private Boolean managerView;
+    
+    @FXML
+    void switchSceneButtonClicked(ActionEvent event) {
+        try {
+            Stage stage = (Stage) switchSceneBtn.getScene().getWindow();
+            String name = "";
+            if (managerView){
+                name = "manager-graph-view.fxml";
+                managerView = false;
+            }
+            else{
+                name = "manager-view.fxml";
+                managerView = true;
+            }
+            FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource(name));
+            Parent root = loader.load();
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
 
     @FXML
     private Button updateInventoryButton;
@@ -194,6 +243,8 @@ public class ManagerViewController implements Initializable{
         slide_menu.setTranslateX(-100);
         employeeView = false;
         updateInventoryButton.setOnAction(this::handleUpdateInventoryButton);
+        managerView = true;
     }
+
 
 }
