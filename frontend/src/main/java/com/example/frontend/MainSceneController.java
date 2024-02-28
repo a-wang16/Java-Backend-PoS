@@ -59,8 +59,11 @@ public class MainSceneController implements Initializable{
     private ScrollPane checkoutScroll;
 
     @FXML
+    private Label totalWithTax;
+
+    @FXML
     private Label orderTotal;
-    private double orderTotalInt;
+    private double orderTotalPrice;
 
     private VBox checkoutVbox;
 
@@ -73,25 +76,33 @@ public class MainSceneController implements Initializable{
 
     private ObservableList<OrderItem> currentOrder = FXCollections.observableArrayList();
 
+    // adding an item to an order
     public void addItemToOrder(int menuItemId, int quantity, String name, double price) {
         for (int i = 0; i < currentOrder.size(); i++) {
             OrderItem item = currentOrder.get(i);
+            // the item already exists, just update the quantity
             if (item.getMenuItemId() == menuItemId) {
                 int newQuantity = item.getQuantity() + quantity;
                 orderQuantList.get(i).setText("" + newQuantity);
-
                 currentOrder.set(currentOrder.indexOf(item), new OrderItem(menuItemId, newQuantity, name, price));
+                orderTotalPrice += price;
+                String subTotal = String.format("$%.2f", orderTotalPrice);
+                String total = String.format("$%.2f", orderTotalPrice * 1.0825);
+                orderTotal.setText(subTotal);
+                totalWithTax.setText(total);
                 return;
             }
         }
-        currentOrder.add(new OrderItem(menuItemId, quantity, name, price));
 
+        // the item doesn't exist, add to the order total
+        currentOrder.add(new OrderItem(menuItemId, quantity, name, price));
         Label orderName = new Label(name);
-        orderName.setPrefWidth(180);
+        orderName.setPrefWidth(170);
         orderName.wrapTextProperty().setValue(true);
         Label orderQuant = new Label("" + quantity);
         orderQuant.setPrefWidth(20);
-        Label orderPrice = new Label("$" + price);
+        String itemPrice = String.format("$%.2f", price);
+        Label orderPrice = new Label(itemPrice);
         orderPrice.setPrefWidth(50);
         HBox container = new HBox(10);
         container.setPadding(new Insets(5, 2, 5, 2));
@@ -99,7 +110,22 @@ public class MainSceneController implements Initializable{
         container.getChildren().addAll(orderName, orderQuant, orderPrice);
         checkoutVbox.getChildren().add(container);
 
+        orderTotalPrice += price;
+        String subTotal = String.format("$%.2f", orderTotalPrice);
+        String total = String.format("$%.2f", orderTotalPrice * 1.0825);
+        orderTotal.setText(subTotal);
+        totalWithTax.setText(total);
         orderQuantList.add(orderQuant);
+    }
+
+    // clear out the order summary
+    @FXML
+    void cancelOrder(){
+        currentOrder.clear();
+        orderTotalPrice = 0.0;
+        totalWithTax.setText("$0.00");
+        orderTotal.setText("$0.00");
+        checkoutVbox.getChildren().clear();
     }
 
     public void removeItemFromOrder(int menuItemId) {
@@ -113,8 +139,6 @@ public class MainSceneController implements Initializable{
         }
     }
 
-
-
     private Properties readProperties() {
         Properties prop = new Properties();
         try (InputStream input = HelloApplication.class.getResourceAsStream("config.properties")) {
@@ -125,6 +149,7 @@ public class MainSceneController implements Initializable{
         return prop;
     }
 
+   // Function to switch pages
     @FXML
     void switchButton(MouseEvent event) {
         try {
@@ -189,6 +214,7 @@ public class MainSceneController implements Initializable{
         this.primaryStage = primaryStage;
     }
 
+    // Submitting an order and notifying the database
     @FXML
     void complete_order(MouseEvent event) {
         // Create a new Stage for the dialog
@@ -213,8 +239,11 @@ public class MainSceneController implements Initializable{
             currentOrder.clear();
             checkoutVbox.getChildren().clear();
 
+            orderTotalPrice = 0.0;
+            totalWithTax.setText("$0.00");
+            orderTotal.setText("$0.00");
+            checkoutVbox.getChildren().clear();
         });
-
         dialogVBox.getChildren().addAll(nameLabel, nameField, continueButton);
 
         // Set the scene and show the stage
@@ -223,40 +252,50 @@ public class MainSceneController implements Initializable{
         dialogStage.showAndWait();
     }
 
+    // Setting variables
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
+
+        // Setting switch screen to say that we are on employee view
         employeeView = true;
 
-        // initializing the vertical menu
+        // Initializing the vertical menu
         menu_close.setVisible(false);
         menu_open.setVisible(true);
         slide_menu.setTranslateX(-100);
 
+        // Setting properties for the scroll panes
         checkoutVbox = new VBox();
         checkoutScroll.setContent(checkoutVbox);
         checkoutScroll.setStyle("-fx-background-color:transparent;");
+        menu_scroll.setStyle("-fx-background-color:transparent;");
 
-//        orderTotal.set
+
         orderQuantList = new ArrayList<>();
 
         Properties prop = readProperties();
-        orderTotalInt = 0.0;
-        orderTotal.setText("$" + orderTotalInt);
+
+        // Setting the order total
+        orderTotalPrice = 0.0;
+        orderTotal.setText("$0.00");
+        totalWithTax.setText("$0.00");
 
         // connecting to the database
         Connection conn = DatabaseConnectionManager.getConnection();
 
+        // Variables to set from what was received from database
         String name = "";
         String category = "";
-
         int id = 0;
         double price = 0.0;
+
+        // Array lists to keep track of elements in menu items
         ArrayList<String> categories = new ArrayList<String>();
         ArrayList<VBox> menu_categories = new ArrayList<VBox>();
         ArrayList<TilePane> menu_tilePanes = new ArrayList<TilePane>();
         VBox menu_layout = new VBox();
         try{
-            //Asking for all of the menu items from the database
+            //Asking for all the menu items from the database
             Statement stmt = conn.createStatement();
             String sqlStatement = "SELECT * FROM menu_item;";
             ResultSet result = stmt.executeQuery(sqlStatement);
@@ -320,6 +359,7 @@ public class MainSceneController implements Initializable{
                 menu_tilePanes.get(index).getChildren().add(btn);
             }
 
+            // adding the children
             menu_scroll.setContent(menu_layout);
             menu_layout.setSpacing(70);
             menu_layout.setPadding(new Insets(60, 60, 60, 60));
