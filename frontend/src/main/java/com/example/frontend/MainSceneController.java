@@ -203,10 +203,16 @@ public class MainSceneController implements Initializable{
         // Add components to the layout
         Label nameLabel = new Label("Name on Order");
         TextField nameField = new TextField();
+        String customerName = nameField.getText();
+
         Button continueButton = new Button("Continue to Payment");
         continueButton.setOnAction(e -> {
             // Handle the continue action
             dialogStage.close();
+            DatabaseOperations.createOrderAndUpdateInventory(1, currentOrder, customerName);
+            currentOrder.clear();
+            checkoutVbox.getChildren().clear();
+
         });
 
         dialogVBox.getChildren().addAll(nameLabel, nameField, continueButton);
