@@ -29,7 +29,7 @@
                         <Label alignment="TOP_LEFT" contentDisplay="TOP" layoutX="37.0" layoutY="96.0" prefHeight="375.0" prefWidth="215.0" text="This is where the insights on low quantity inventory items go." wrapText="true" />
                      </children>
                         </AnchorPane>
-                  <Button layoutX="165.0" layoutY="56.0" mnemonicParsing="false" text="Update Inventory" />
+                  <Button fx:id="updateInventoryButton" layoutX="165.0" layoutY="56.0" mnemonicParsing="false" text="Update Inventory" />
                   <Button layoutX="60.0" layoutY="56.0" mnemonicParsing="false" text="Update Menu" />
                     </children>
                     <opaqueInsets>
