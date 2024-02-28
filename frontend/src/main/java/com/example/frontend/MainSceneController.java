@@ -35,6 +35,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import com.example.frontend.DatabaseConnectionManager;
+
 public class MainSceneController implements Initializable{
 
     @FXML
@@ -167,24 +169,7 @@ public class MainSceneController implements Initializable{
         Properties prop = readProperties();
 
         // connecting to the database
-        Connection conn = null;
-
-        String database_name = prop.getProperty("database.name");
-        String database_user = prop.getProperty("database.user");
-        String database_password = prop.getProperty("database.password");
-        String database_host = prop.getProperty("database.host");
-        String database_url = String.format("jdbc:postgresql://%s/%s", database_host, database_name);
-        
-        try {
-            conn = DriverManager.getConnection(database_url, database_user, database_password);
-            System.out.println("Successfully connected to database.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println(e.getClass().getName()+": "+e.getMessage());
-            System.exit(0);
-            System.out.println("Could not connect to database.");
-        }
-
+        Connection conn = DatabaseConnectionManager.getConnection();
 
         String name = "";
         String category = "";
@@ -251,14 +236,6 @@ public class MainSceneController implements Initializable{
         } catch (Exception e){
             e.printStackTrace();
             System.out.println("Error accessing Database.");
-        }
-
-        try {
-            conn.close();
-            System.out.println("Database closed successfully.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error in closing database.");
         }
     }
 }
