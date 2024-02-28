@@ -80,6 +80,8 @@ public class ManagerViewController implements Initializable{
     private Button switchSceneBtn;
     @FXML
     private Boolean managerView;
+
+    Connection conn;
     
     @FXML
     void switchSceneButtonClicked(ActionEvent event) {
@@ -251,6 +253,7 @@ public class ManagerViewController implements Initializable{
             }
             modalStage.close();
         }
+        setUpdateInventory();
     }
     
 
@@ -354,24 +357,12 @@ public class ManagerViewController implements Initializable{
         });
     }
 
-
-    @Override
-    public void initialize(URL arg0, ResourceBundle arg1) {
-        menu_close.setVisible(false);
-        menu_open.setVisible(true);
-        slide_menu.setTranslateX(-100);
-        employeeView = false;
-        updateInventoryButton.setOnAction(this::handleUpdateInventoryButton);
-        updateMenuButton.setOnAction(this::handleUpdateMenuButton);
-        managerScroll.setPadding(new Insets(20, 20, 20, 20));
-
-
-        // Variables to set from what was received from database
+    public void setUpdateInventory(){
         String name = "";
         String quant = "";
         String id = "";
 
-        Connection conn = DatabaseConnectionManager.getConnection();
+        conn = DatabaseConnectionManager.getConnection();
         // Array lists to keep track of elements in menu items
         VBox itemsVertical = new VBox(20);
 
@@ -432,13 +423,30 @@ public class ManagerViewController implements Initializable{
                 toAdd.getChildren().addAll(c, idLabel, nameLabel, quantLabel);
                 itemsVertical.getChildren().add(toAdd);
             }
-//            testPane.getChildren().add(itemsVertical);
+
             managerScroll.setContent(itemsVertical);
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error accessing Database.");
         }
 
+
+    }
+
+    @Override
+    public void initialize(URL arg0, ResourceBundle arg1) {
+        menu_close.setVisible(false);
+        menu_open.setVisible(true);
+        slide_menu.setTranslateX(-100);
+        employeeView = false;
+        updateInventoryButton.setOnAction(this::handleUpdateInventoryButton);
+        updateMenuButton.setOnAction(this::handleUpdateMenuButton);
+        managerScroll.setPadding(new Insets(20, 20, 20, 20));
+
+        // populating the inventory
+        setUpdateInventory();
+
+        // Variables to set from what was received from database
         managerView = true;
     }
 
