@@ -97,7 +97,7 @@
                         <Insets top="5.0" />
                     </BorderPane.margin>
                <children>
-                  <ScrollPane fx:id="menu_scroll" onMouseClicked="#switchButton" prefHeight="772.0" prefWidth="817.0">
+                  <ScrollPane fx:id="menu_scroll" prefHeight="772.0" prefWidth="817.0">
                     <content>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
                     </content>
