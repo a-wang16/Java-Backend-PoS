@@ -243,6 +243,7 @@ public class MainSceneController implements Initializable{
             totalWithTax.setText("$0.00");
             orderTotal.setText("$0.00");
             checkoutVbox.getChildren().clear();
+            orderQuantList.clear();
         });
         dialogVBox.getChildren().addAll(nameLabel, nameField, continueButton);
 
