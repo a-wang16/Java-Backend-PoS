@@ -12,6 +12,8 @@ import java.util.ResourceBundle;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.layout.*;
+import javafx.scene.control.Label;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -24,9 +26,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.TilePane;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -57,7 +56,12 @@ import com.example.frontend.DatabaseConnectionManager;
 public class ManagerViewController implements Initializable{
 
     @FXML
+    private ScrollPane managerScroll;
+    @FXML
     private ImageView menu_close;
+
+    @FXML
+    private Pane testPane;
 
     @FXML
     private ImageView menu_open;
@@ -308,6 +312,38 @@ public class ManagerViewController implements Initializable{
         employeeView = false;
         updateInventoryButton.setOnAction(this::handleUpdateInventoryButton);
         updateMenuButton.setOnAction(this::handleUpdateMenuButton);
+
+
+
+        // Variables to set from what was received from database
+        String name = "";
+        String quant = "";
+
+        Connection conn = DatabaseConnectionManager.getConnection();
+        // Array lists to keep track of elements in menu items
+        VBox itemsVertical = new VBox(20);
+        try {
+            String sqlStatement = "SELECT * FROM inventory;";
+            Statement stmt = conn.createStatement();
+
+            ResultSet result = stmt.executeQuery(sqlStatement);
+
+            while (result.next()) {
+                name = result.getString("name");
+                quant = result.getString("quantity");
+
+                HBox toAdd = new HBox(20);
+                Label nameLabel = new Label(name);
+                Label quantLabel = new Label(quant);
+                toAdd.getChildren().addAll(nameLabel, quantLabel);
+                itemsVertical.getChildren().add(toAdd);
+            }
+//            testPane.getChildren().add(itemsVertical);
+            managerScroll.setContent(itemsVertical);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error accessing Database.");
+        }
 
         managerView = true;
     }

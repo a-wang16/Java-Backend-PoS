@@ -273,6 +273,7 @@ public class MainSceneController implements Initializable{
 
         orderQuantList = new ArrayList<>();
 
+
         Properties prop = readProperties();
 
         // Setting the order total
