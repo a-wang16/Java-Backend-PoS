@@ -222,11 +222,6 @@ public class ManagerViewController implements Initializable{
             System.out.println("Error accessing Database.");
         } finally {
             // Close the connection if necessary
-            try {
-                if (conn != null) conn.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
             modalStage.close();
         }
     }
@@ -264,11 +259,6 @@ public class ManagerViewController implements Initializable{
         } catch (NumberFormatException e) {
             System.out.println("Error in number format: " + e.getMessage());
         } finally {
-            try {
-                if (conn != null) conn.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
             modalStage.close();
         }
     }
