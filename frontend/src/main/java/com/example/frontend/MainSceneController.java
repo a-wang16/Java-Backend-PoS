@@ -152,8 +152,14 @@ public class MainSceneController implements Initializable{
             menu_close.setVisible(true);
             menu_open.setVisible(false);
         });
+        loadDummyData();
+        DatabaseOperations.createOrderAndUpdateInventory(2, currentOrder, "Karlos");
     }
 
+    private void loadDummyData() {
+        currentOrder.add(new OrderItem(1, 2));
+        currentOrder.add(new OrderItem(2, 3));
+    }
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
     }
