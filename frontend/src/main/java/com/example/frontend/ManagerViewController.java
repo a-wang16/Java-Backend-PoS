@@ -47,6 +47,37 @@ public class ManagerViewController implements Initializable{
     @FXML
     private ImageView switchBtn;
     private Boolean employeeView;
+    
+
+
+    @FXML
+    private Button switchSceneBtn;
+    private Boolean managerView;
+    
+    @FXML
+    void switchSceneButtonClicked(MouseEvent event) {
+        try {
+            Stage stage = (Stage) switchSceneBtn.getScene().getWindow();
+            String name = "";
+            if (managerView){
+                name = "manager-view-graph.fxml";
+                employeeView = false;
+            }
+            else{
+                name = "manager-view";
+                employeeView = true;
+            }
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("manager-view-graph.fxml"));
+            Parent root = loader.load();
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
 
     @FXML
     void switchButton(MouseEvent event) {
