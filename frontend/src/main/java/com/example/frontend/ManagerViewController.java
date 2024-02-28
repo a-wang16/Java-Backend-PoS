@@ -193,42 +193,69 @@ public class ManagerViewController implements Initializable{
     }
 
     private void handleInventorySaveAction(String name, String quantity, String unit, Stage modalStage) {
-        // Handle the save action (e.g., print inventory details)
         System.out.println("Updating Inventory Item:");
         System.out.println("Name: " + name);
         System.out.println("Quantity: " + quantity);
         System.out.println("Unit: " + unit);
-
-        // Establishing a connection to the database
+    
         Connection conn = DatabaseConnectionManager.getConnection();
-
+        PreparedStatement pstmtCheck = null;
+        PreparedStatement pstmtUpdate = null;
+        PreparedStatement pstmtInsert = null;
+    
         try {
-            // SQL statement to update inventory item
-            String sqlStatement = "UPDATE inventory SET quantity = ?, unit = ? WHERE name = ?;";
-
-            // Preparing the SQL statement
-            PreparedStatement pstmt = conn.prepareStatement(sqlStatement);
-
-            // Setting the parameters for the SQL statement
-            pstmt.setInt(1, Integer.parseInt(quantity));       
-            pstmt.setString(2, unit);
-            pstmt.setString(3, name);
-
-            // Executing the SQL update
-            int rowsAffected = pstmt.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Inventory updated successfully.");
+            // Check if the inventory item exists
+            String sqlQueryToCheck = "SELECT EXISTS(SELECT 1 FROM inventory WHERE name = ?)";
+            pstmtCheck = conn.prepareStatement(sqlQueryToCheck);
+            pstmtCheck.setString(1, name);
+            ResultSet rs = pstmtCheck.executeQuery();
+            boolean inventoryExist = false;
+            if (rs.next()) {
+                inventoryExist = rs.getBoolean(1);
+            }
+    
+            if (inventoryExist) {
+                // SQL statement to update inventory item
+                String sqlStatement = "UPDATE inventory SET quantity = ?, unit = ? WHERE name = ?";
+                pstmtUpdate = conn.prepareStatement(sqlStatement);
+                pstmtUpdate.setInt(1, Integer.parseInt(quantity));       
+                pstmtUpdate.setString(2, unit);
+                pstmtUpdate.setString(3, name);
+                int rowsAffected = pstmtUpdate.executeUpdate();
+    
+                if (rowsAffected > 0) {
+                    System.out.println("Inventory updated successfully.");
+                } else {
+                    System.out.println("Inventory update failed. No item found with the specified name.");
+                }
             } else {
-                System.out.println("Inventory update failed. No item found with the specified name.");
+                // SQL statement to insert a new inventory item
+                String sqlInsert = "INSERT INTO inventory (name, quantity, unit) VALUES (?, ?, ?);";
+                pstmtInsert = conn.prepareStatement(sqlInsert);
+                pstmtInsert.setString(1, name);
+                pstmtInsert.setInt(2, Integer.parseInt(quantity));
+                pstmtInsert.setString(3, unit);
+                pstmtInsert.executeUpdate();
+                System.out.println("New inventory item created successfully.");
             }
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Error accessing Database.");
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid number format for quantity: " + e.getMessage());
         } finally {
-            // Close the connection if necessary
+            // Close resources
+            try {
+                if (pstmtCheck != null) pstmtCheck.close();
+                if (pstmtUpdate != null) pstmtUpdate.close();
+                if (pstmtInsert != null) pstmtInsert.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             modalStage.close();
         }
     }
+    
 
     private void handleMenuSaveAction(String name, String price, String calories, String category, Stage modalStage) {
         System.out.println("Updating Menu Item:");
