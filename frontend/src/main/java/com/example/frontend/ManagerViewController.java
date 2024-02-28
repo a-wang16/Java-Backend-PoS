@@ -265,25 +265,52 @@ public class ManagerViewController implements Initializable{
         System.out.println("Category: " + category);
     
         Connection conn = DatabaseConnectionManager.getConnection();
+        PreparedStatement pstmtCheck = null;
+        PreparedStatement pstmtUpdate = null;
+        PreparedStatement pstmtInsert = null;
     
         try {
-            // Adjust the SQL statement according to your database schema
-            String sqlStatement = "UPDATE menu_item SET price = ?, calories = ?, category = ? WHERE name = ?;";
-    
-            PreparedStatement pstmt = conn.prepareStatement(sqlStatement);
-    
-            // Assuming 'price' and 'calories' are stored as decimals and integers in your database
-            pstmt.setDouble(1, Double.parseDouble(price));
-            pstmt.setInt(2, Integer.parseInt(calories));
-            pstmt.setString(3, category);
-            pstmt.setString(4, name);
-    
-            int rowsAffected = pstmt.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Menu updated successfully.");
-            } else {
-                System.out.println("Menu update failed. No item found with the specified name.");
+            // Check if the menu item exists
+            String sqlQueryToCheck = "SELECT EXISTS(SELECT 1 FROM menu_item WHERE name = ?)";
+            pstmtCheck = conn.prepareStatement(sqlQueryToCheck);
+            pstmtCheck.setString(1, name);
+            ResultSet rs = pstmtCheck.executeQuery();
+            boolean menuExist = false;
+            if (rs.next()) {
+                menuExist = rs.getBoolean(1);
             }
+
+            if (menuExist) {
+                // Adjust the SQL statement according to your database schema
+                String sqlStatement = "UPDATE menu_item SET price = ?, calories = ?, category = ? WHERE name = ?;";
+        
+                PreparedStatement pstmt = conn.prepareStatement(sqlStatement);
+        
+                // Assuming 'price' and 'calories' are stored as decimals and integers in your database
+                pstmt.setDouble(1, Double.parseDouble(price));
+                pstmt.setInt(2, Integer.parseInt(calories));
+                pstmt.setString(3, category);
+                pstmt.setString(4, name);
+        
+                int rowsAffected = pstmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    System.out.println("Menu updated successfully.");
+                } else {
+                    System.out.println("Menu update failed. No item found with the specified name.");
+                }
+            } else {
+                // SQL statement to insert a new inventory item
+                String sqlInsert = "INSERT INTO menu_item (name, price, calories, category) VALUES (?, ?, ?, ?);";
+                pstmtInsert = conn.prepareStatement(sqlInsert);
+                pstmtInsert.setString(1, name);
+                pstmtInsert.setDouble(2, Double.parseDouble(price));
+                pstmtInsert.setInt(3, Integer.parseInt(calories));
+                pstmtInsert.setString(4, category);
+                pstmtInsert.executeUpdate();
+                System.out.println("New menu item created successfully.");
+            }
+
+            
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Error accessing Database.");
