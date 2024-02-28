@@ -60,10 +60,15 @@ public class DatabaseOperations {
     public static class OrderItem {
         private final int menuItemId;
         private final int quantity;
+        private final String name;
+        private final Double price;
 
-        public OrderItem(int menuItemId, int quantity) {
+
+        public OrderItem(int menuItemId, int quantity, String name, Double price) {
             this.menuItemId = menuItemId;
             this.quantity = quantity;
+            this.name = name;
+            this.price = price;
         }
 
         public int getMenuItemId() {
@@ -73,6 +78,10 @@ public class DatabaseOperations {
         public int getQuantity() {
             return quantity;
         }
+
+        public String getName() { return name; }
+
+        public Double getPrice() {return price; }
     }
 
 }

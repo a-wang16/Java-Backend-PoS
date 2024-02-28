@@ -13,6 +13,7 @@ import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -27,6 +28,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -53,35 +55,64 @@ public class MainSceneController implements Initializable{
     private AnchorPane menu_pane;
     @FXML
     private ScrollPane menu_scroll;
+    @FXML
+    private ScrollPane checkoutScroll;
+
+    @FXML
+    private Label orderTotal;
+    private double orderTotalInt;
+
+    private VBox checkoutVbox;
 
     @FXML
     private ImageView switchBtn;
     private Stage primaryStage;
     private Boolean employeeView;
 
+    ArrayList<Label> orderQuantList;
+
     private ObservableList<OrderItem> currentOrder = FXCollections.observableArrayList();
 
-    public void addItemToOrder(int menuItemId, int quantity) {
-        for (OrderItem item : currentOrder) {
+    public void addItemToOrder(int menuItemId, int quantity, String name, double price) {
+        for (int i = 0; i < currentOrder.size(); i++) {
+            OrderItem item = currentOrder.get(i);
             if (item.getMenuItemId() == menuItemId) {
                 int newQuantity = item.getQuantity() + quantity;
-                currentOrder.set(currentOrder.indexOf(item), new OrderItem(menuItemId, newQuantity));
+                orderQuantList.get(i).setText("" + newQuantity);
+
+                currentOrder.set(currentOrder.indexOf(item), new OrderItem(menuItemId, newQuantity, name, price));
                 return;
             }
         }
-        currentOrder.add(new OrderItem(menuItemId, quantity));
+        currentOrder.add(new OrderItem(menuItemId, quantity, name, price));
+
+        Label orderName = new Label(name);
+        orderName.setPrefWidth(180);
+        orderName.wrapTextProperty().setValue(true);
+        Label orderQuant = new Label("" + quantity);
+        orderQuant.setPrefWidth(20);
+        Label orderPrice = new Label("$" + price);
+        orderPrice.setPrefWidth(50);
+        HBox container = new HBox(10);
+        container.setPadding(new Insets(5, 2, 5, 2));
+
+        container.getChildren().addAll(orderName, orderQuant, orderPrice);
+        checkoutVbox.getChildren().add(container);
+
+        orderQuantList.add(orderQuant);
     }
 
     public void removeItemFromOrder(int menuItemId) {
         currentOrder.removeIf(item -> item.getMenuItemId() == menuItemId);
     }
 
-    public void updateItemQuantityInOrder(int menuItemId, int newQuantity) {
+    public void updateItemQuantityInOrder(int menuItemId, int newQuantity, String name, double price) {
         currentOrder.removeIf(item -> item.getMenuItemId() == menuItemId);
         if (newQuantity > 0) {
-            currentOrder.add(new OrderItem(menuItemId, newQuantity));
+            currentOrder.add(new OrderItem(menuItemId, newQuantity, name, price));
         }
     }
+
 
 
     private Properties readProperties() {
@@ -195,13 +226,25 @@ public class MainSceneController implements Initializable{
         menu_open.setVisible(true);
         slide_menu.setTranslateX(-100);
 
+        checkoutVbox = new VBox();
+        checkoutScroll.setContent(checkoutVbox);
+        checkoutScroll.setStyle("-fx-background-color:transparent;");
+
+//        orderTotal.set
+        orderQuantList = new ArrayList<>();
+
         Properties prop = readProperties();
+        orderTotalInt = 0.0;
+        orderTotal.setText("$" + orderTotalInt);
 
         // connecting to the database
         Connection conn = DatabaseConnectionManager.getConnection();
 
         String name = "";
         String category = "";
+
+        int id = 0;
+        double price = 0.0;
         ArrayList<String> categories = new ArrayList<String>();
         ArrayList<VBox> menu_categories = new ArrayList<VBox>();
         ArrayList<TilePane> menu_tilePanes = new ArrayList<TilePane>();
@@ -215,6 +258,8 @@ public class MainSceneController implements Initializable{
             while (result.next()) {
                 name = result.getString("name");
                 category = result.getString("category");
+                id = result.getInt("id");
+                price = result.getDouble("price");
 
                 // seeing if we already have the category that this menu item is a part of
                 int index = categories.indexOf(category);
@@ -256,6 +301,16 @@ public class MainSceneController implements Initializable{
                 btn.wrapTextProperty().setValue(true);
                 btn.setTextAlignment(TextAlignment.CENTER);
                 btn.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 12));
+
+                int addID = id;
+                String finalName = name;
+                double finalPrice = price;
+                btn.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        addItemToOrder(addID, 1, finalName, finalPrice);
+                    }
+                });
                 menu_tilePanes.get(index).getChildren().add(btn);
             }
 
