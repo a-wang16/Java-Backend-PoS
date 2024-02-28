@@ -59,8 +59,11 @@ public class MainSceneController implements Initializable{
     private ScrollPane checkoutScroll;
 
     @FXML
+    private Label totalWithTax;
+
+    @FXML
     private Label orderTotal;
-    private double orderTotalInt;
+    private double orderTotalPrice;
 
     private VBox checkoutVbox;
 
@@ -79,19 +82,24 @@ public class MainSceneController implements Initializable{
             if (item.getMenuItemId() == menuItemId) {
                 int newQuantity = item.getQuantity() + quantity;
                 orderQuantList.get(i).setText("" + newQuantity);
-
                 currentOrder.set(currentOrder.indexOf(item), new OrderItem(menuItemId, newQuantity, name, price));
+                orderTotalPrice += price;
+                String subTotal = String.format("$%.2f", orderTotalPrice);
+                String total = String.format("$%.2f", orderTotalPrice * 1.0825);
+                orderTotal.setText(subTotal);
+                totalWithTax.setText(total);
                 return;
             }
         }
         currentOrder.add(new OrderItem(menuItemId, quantity, name, price));
 
         Label orderName = new Label(name);
-        orderName.setPrefWidth(180);
+        orderName.setPrefWidth(170);
         orderName.wrapTextProperty().setValue(true);
         Label orderQuant = new Label("" + quantity);
         orderQuant.setPrefWidth(20);
-        Label orderPrice = new Label("$" + price);
+        String itemPrice = String.format("$%.2f", price);
+        Label orderPrice = new Label(itemPrice);
         orderPrice.setPrefWidth(50);
         HBox container = new HBox(10);
         container.setPadding(new Insets(5, 2, 5, 2));
@@ -99,8 +107,23 @@ public class MainSceneController implements Initializable{
         container.getChildren().addAll(orderName, orderQuant, orderPrice);
         checkoutVbox.getChildren().add(container);
 
+        orderTotalPrice += price;
+        String subTotal = String.format("$%.2f", orderTotalPrice);
+        String total = String.format("$%.2f", orderTotalPrice * 1.0825);
+        orderTotal.setText(subTotal);
+        totalWithTax.setText(total);
         orderQuantList.add(orderQuant);
     }
+
+    @FXML
+    void cancelOrder(){
+        currentOrder.clear();
+        orderTotalPrice = 0.0;
+        totalWithTax.setText("$0.00");
+        orderTotal.setText("$0.00");
+        checkoutVbox.getChildren().clear();
+    }
+
 
     public void removeItemFromOrder(int menuItemId) {
         currentOrder.removeIf(item -> item.getMenuItemId() == menuItemId);
@@ -234,14 +257,16 @@ public class MainSceneController implements Initializable{
         orderQuantList = new ArrayList<>();
 
         Properties prop = readProperties();
-        orderTotalInt = 0.0;
-        orderTotal.setText("$" + orderTotalInt);
+        orderTotalPrice = 0.0;
+        orderTotal.setText("$0.00");
+        totalWithTax.setText("$0.00");
 
         // connecting to the database
         Connection conn = DatabaseConnectionManager.getConnection();
 
         String name = "";
         String category = "";
+
 
         int id = 0;
         double price = 0.0;
