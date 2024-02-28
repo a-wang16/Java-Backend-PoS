@@ -123,6 +123,7 @@ public class MainSceneController implements Initializable{
     void cancelOrder(){
         currentOrder.clear();
         orderTotalPrice = 0.0;
+        orderQuantList.clear();
         totalWithTax.setText("$0.00");
         orderTotal.setText("$0.00");
         checkoutVbox.getChildren().clear();
@@ -238,6 +239,7 @@ public class MainSceneController implements Initializable{
             DatabaseOperations.createOrderAndUpdateInventory(1, currentOrder, customerName);
             currentOrder.clear();
             checkoutVbox.getChildren().clear();
+            orderQuantList.clear();
 
             orderTotalPrice = 0.0;
             totalWithTax.setText("$0.00");
@@ -342,7 +344,7 @@ public class MainSceneController implements Initializable{
                 }
 
                 // creating a new button with the menu item and adding it to the appropriate category
-                Button btn = new Button(name);
+                Button btn = new Button(name + "\n" + price);
                 btn.setPrefHeight(120);
                 btn.setPrefWidth(120);
                 btn.wrapTextProperty().setValue(true);
