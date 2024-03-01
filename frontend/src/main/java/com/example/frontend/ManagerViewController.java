@@ -38,7 +38,6 @@ public class ManagerViewController implements Initializable{
     private ScrollPane managerScroll;
     @FXML
     private ImageView menu_close;
-
     @FXML
     private Pane testPane;
 
