@@ -7,13 +7,13 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class HelloApplication extends Application {
+public class StartApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("gemma.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(StartApplication.class.getResource("employee-entry-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
 
-        MainSceneController controller = fxmlLoader.getController();
+        EmployeeViewController controller = fxmlLoader.getController();
         controller.setPrimaryStage(stage); // Pass the stage to the controller
         stage.setScene(scene);
         stage.setResizable(false);

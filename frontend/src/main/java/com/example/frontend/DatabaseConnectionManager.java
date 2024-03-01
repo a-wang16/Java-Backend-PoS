@@ -1,7 +1,5 @@
 package com.example.frontend;
 
-import com.example.frontend.MainSceneController;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
@@ -19,7 +17,7 @@ public class DatabaseConnectionManager {
                 if (connection == null) {
                     try {
                         Properties prop = new Properties();
-                        InputStream input = MainSceneController.class.getResourceAsStream("config.properties");
+                        InputStream input = EmployeeViewController.class.getResourceAsStream("config.properties");
                         prop.load(input);
 
                         String database_name = prop.getProperty("database.name");

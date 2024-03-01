@@ -1,12 +1,7 @@
 package com.example.frontend;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.Properties;
 import java.util.ResourceBundle;
 //
 import javafx.animation.TranslateTransition;
@@ -17,7 +12,6 @@ import javafx.scene.layout.*;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -26,29 +20,17 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
-import javafx.scene.text.TextAlignment;
 
-import java.io.IOException;
-import java.net.URL;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Properties;
-import java.util.ResourceBundle;
 
-import javafx.fxml.FXML;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
-import com.example.frontend.DatabaseConnectionManager;
 
 public class ManagerViewController implements Initializable{
 
@@ -96,7 +78,7 @@ public class ManagerViewController implements Initializable{
                 name = "manager-view.fxml";
                 managerView = true;
             }
-            FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource(name));
+            FXMLLoader loader = new FXMLLoader(StartApplication.class.getResource(name));
             Parent root = loader.load();
             stage.setScene(new Scene(root));
             stage.show();
@@ -118,10 +100,10 @@ public class ManagerViewController implements Initializable{
                 employeeView = false;
             }
             else{
-                name = "gemma.fxml";
+                name = "employee-entry-view.fxml";
                 employeeView = true;
             }
-            FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource(name));
+            FXMLLoader loader = new FXMLLoader(StartApplication.class.getResource(name));
             Parent root = loader.load();
             stage.setScene(new Scene(root));
             stage.show();
