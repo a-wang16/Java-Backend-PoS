@@ -12,7 +12,6 @@ public class StartApplication extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(StartApplication.class.getResource("employee-entry-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-
         EmployeeViewController controller = fxmlLoader.getController();
         controller.setPrimaryStage(stage); // Pass the stage to the controller
         stage.setScene(scene);

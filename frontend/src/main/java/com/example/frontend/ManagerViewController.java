@@ -10,6 +10,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.fxml.FXMLLoader;
@@ -275,39 +276,103 @@ public class ManagerViewController implements Initializable{
     void handleUpdateMenuButton(ActionEvent event) {
         Stage modalStage = new Stage();
         modalStage.initModality(Modality.APPLICATION_MODAL); // Block interaction with other windows
-        modalStage.setTitle("Update Menu");
+        modalStage.setTitle("Add New Menu Item");
+
+        ScrollPane recipeScroll = new ScrollPane();
+        recipeScroll.setPadding(new Insets(10));
 
         VBox modalVBox = new VBox(10);
-        Label instructionLabel = new Label("Enter Menu Item Details:");
-        modalVBox.getChildren().add(instructionLabel);
+        Label instructionLabel = new Label("New Menu Item Details:");
+        instructionLabel.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 13));
+
+
+        HBox descriptionHeaders = new HBox(5);
+        Label nameLabel = new Label("Name: ");
+        nameLabel.setPrefWidth(130);
+        Label priceLabel = new Label("Price: ");
+        priceLabel.setPrefWidth(60);
+        Label caloriesLabel = new Label("Calories: ");
+        caloriesLabel.setPrefWidth(70);
+        Label categoryLabel = new Label("Category: ");
+        categoryLabel.setPrefWidth(90);
+        descriptionHeaders.getChildren().addAll(nameLabel, priceLabel, caloriesLabel, categoryLabel);
+
+        HBox descriptionHbox = new HBox(5);
+        TextField nameField = new TextField();
+        nameField.setPrefWidth(130);
+        TextField priceField = new TextField();
+        priceField.setPrefWidth(60);
+        TextField caloriesField = new TextField();
+        caloriesField.setPrefWidth(70);
+        TextField categoryField = new TextField();
+        categoryField.setPrefWidth(90);
+        descriptionHbox.getChildren().addAll(nameField, priceField, caloriesField, categoryField);
+
+        Label recipeDes = new Label("Menu Item Recipe");
+        recipeDes.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 13));
+
+        modalVBox.getChildren().addAll(instructionLabel, descriptionHeaders, descriptionHbox, recipeDes);
+
+        HBox recipeHeader = new HBox(10);
+        Label nameHeader = new Label("Item Name");
+        nameHeader.setPrefWidth(120);
+        Label qtyHeader = new Label("Quantity");
+        qtyHeader.setPrefWidth(80);
+        Label unitHeader = new Label("Unit");
+        unitHeader.setPrefWidth(120);
+
+        recipeHeader.getChildren().addAll(nameHeader, qtyHeader, unitHeader);
+        modalVBox.getChildren().add(recipeHeader);
+
+        VBox recipeContainer = new VBox(10);
 
         setCheckedItems();
         for(int i = 0; i < checkedItems.size(); i++){
-            HBox recipeItem = new HBox(5);
-//            TextField
+            HBox recipeItem = new HBox(10);
+
+            TextField nameFiled = new TextField();
+            nameFiled.setText(checkedItems.get(i).getName());
+            nameFiled.setPrefWidth(120);
+            TextField quantityField = new TextField();
+            quantityField.setPrefWidth(80);
+            TextField unitField = new TextField();
+            unitField.setText(checkedItems.get(i).getUnit());
+            unitField.setPrefWidth(120);
+
+            recipeItem.getChildren().addAll(nameFiled, quantityField, unitField);
+            recipeContainer.getChildren().add(recipeItem);
         }
 
         // Define the modal content
+        recipeScroll.setContent(recipeContainer);
+        modalVBox.getChildren().add(recipeScroll);
+        modalVBox.setPadding(new Insets(20));
 
-        modalVBox.setPadding(new Insets(10));
-
-        TextField name = new TextField();
-        TextField price = new TextField();
-        TextField calories = new TextField();
-        TextField category = new TextField();
-
-        name.setPromptText("Enter Item Name");
-        price.setPromptText("Enter Item Price");
-        calories.setPromptText("Enter Item Calories");
-        category.setPromptText("Enter Item Category");
-
+        Button addItemButton = new Button("Add Item to Recipe");
+        addItemButton.setOnAction((ActionEvent e) ->{
+            TextField nameFiled = new TextField();
+            nameFiled.setPrefWidth(120);
+            nameFiled.setPromptText("Enter item name");
+            TextField quantityField = new TextField();
+            quantityField.setPromptText("Enter item quanity");
+            quantityField.setPrefWidth(80);
+            TextField unitField = new TextField();
+            unitField.setPromptText("Enter item unit");
+            unitField.setPrefWidth(120);
+            HBox newItem = new HBox(10);
+            newItem.getChildren().addAll(nameFiled, quantityField, unitField);
+            recipeContainer.getChildren().add(newItem);
+        });
         Button saveButton = new Button("Save");
-        saveButton.setOnAction(e -> handleMenuSaveAction(name.getText(), price.getText(), calories.getText(), category.getText(), modalStage));
+        saveButton.setOnAction(e -> handleMenuSaveAction(nameField.getText(), priceField.getText(), caloriesField.getText(), categoryField.getText(), modalStage));
 
-//        modalVBox.getChildren().addAll(instructionLabel, name, price, calories, category, saveButton);
+        HBox buttonHbox = new HBox(10);
+        buttonHbox.setAlignment(Pos.CENTER);
+        buttonHbox.getChildren().addAll(addItemButton, saveButton);
+        modalVBox.getChildren().addAll(buttonHbox);
 
         // Show the modal window
-        Scene modalScene = new Scene(modalVBox, 300, 300);
+        Scene modalScene = new Scene(modalVBox, 420, 400);
         modalStage.setScene(modalScene);
         modalStage.showAndWait();
     }
@@ -550,6 +615,7 @@ public class ManagerViewController implements Initializable{
                 itemsVertical.getChildren().add(toAdd);
             }
             managerScroll.setContent(itemsVertical);
+            managerScroll.setStyle("-fx-background-color:transparent;");
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error accessing Database.");
