@@ -106,9 +106,9 @@ public class ManagerViewController implements Initializable{
 
     @FXML
     void switchButton(MouseEvent event) {
+        // Switching bewtween manager view and menu
         try {
             Stage stage = (Stage) switchBtn.getScene().getWindow();
-
             String name = "";
             if (employeeView){
                 name = "manager-view.fxml";
@@ -128,6 +128,8 @@ public class ManagerViewController implements Initializable{
     }
 
     void populateLowStockPane(){
+
+        // Setting up containers and description
         ScrollPane inventoryScroll = new ScrollPane();
         inventoryScroll.setPrefSize(290, 575);
         VBox lowStockVBox = new VBox(10);
@@ -141,10 +143,10 @@ public class ManagerViewController implements Initializable{
         description.setPrefWidth(285);
         lowStockVBox.getChildren().addAll(header, description);
 
+        // Querying the database to see which items are low
         String name = "";
         int qty = 0;
         String unit = "";
-
         try{
             //Asking for all the menu items from the database
             Statement stmt = conn.createStatement();
@@ -159,6 +161,8 @@ public class ManagerViewController implements Initializable{
                 toAdd.setPrefWidth(270);
                 toAdd.setFont(Font.font("verdana", FontWeight.NORMAL, FontPosture.REGULAR, 12));
                 toAdd.wrapTextProperty().setValue(true);
+
+                // Adding the items that are low stock
                 lowStockVBox.getChildren().add(toAdd);
             }
         } catch (Exception e){
@@ -166,24 +170,27 @@ public class ManagerViewController implements Initializable{
             System.out.println("Error accessing Database.");
         }
 
+        // ADding the low stock items to the panel
         inventoryScroll.setContent(lowStockVBox);
         lowStockPane.getChildren().add(inventoryScroll);
     }
 
     @FXML
     void handleAddInventoryButton(ActionEvent event) {
+
+        // New modal stage to lock interaction with other windows
         Stage modalStage = new Stage();
-        modalStage.initModality(Modality.APPLICATION_MODAL); // Block interaction with other windows
+        modalStage.initModality(Modality.APPLICATION_MODAL);
         modalStage.setTitle("Update Inventory");
 
         // Define the modal content
         VBox modalVBox = new VBox(10);
         modalVBox.setPadding(new Insets(10));
         Label instructionLabel = new Label("Enter Inventory Details:");
+
         TextField inventoryFieldName = new TextField();
         TextField inventoryFieldQuantity = new TextField();
         TextField inventoryFieldUnit = new TextField();
-
         inventoryFieldName.setPromptText("Enter Item Name");
         inventoryFieldQuantity.setPromptText("Enter Item Quantity");
         inventoryFieldUnit.setPromptText("Enter Item Unit");
@@ -191,19 +198,21 @@ public class ManagerViewController implements Initializable{
         Button saveButton = new Button("Save");
         saveButton.setOnAction(e -> handleInventorySaveAction(inventoryFieldName.getText(), inventoryFieldQuantity.getText(), inventoryFieldUnit.getText(), modalStage));
 
+        // Adding and displaying the items to the modal
         modalVBox.getChildren().addAll(instructionLabel, inventoryFieldName, inventoryFieldQuantity, inventoryFieldUnit, saveButton);
-
-        // Show the modal window
         Scene modalScene = new Scene(modalVBox, 300, 200);
         modalStage.setScene(modalScene);
         modalStage.showAndWait();
     }
     @FXML
     void handleUpdateInventoryButton(ActionEvent event) {
+
+        // New modal stage to lock interaction with other windows
         Stage modalStage = new Stage();
-        modalStage.initModality(Modality.APPLICATION_MODAL); // Block interaction with other windows
+        modalStage.initModality(Modality.APPLICATION_MODAL);
         modalStage.setTitle("Update Inventory");
 
+        // Getting the current inventory items and adding them to a dropdown
         ComboBox inventoryList = new ComboBox();
         ArrayList<Inventory> inventoryItems = new ArrayList<Inventory>();
         try {
@@ -223,7 +232,6 @@ public class ManagerViewController implements Initializable{
             e.printStackTrace();
             System.out.println("Error accessing Database.");
         }
-
         inventoryList.getItems().addAll(FXCollections.observableArrayList(inventoryItems));
 
         Label instructionLabel = new Label("Select Inventory Item:");
@@ -231,8 +239,8 @@ public class ManagerViewController implements Initializable{
         TextField inventoryFieldQuantity = new TextField();
         TextField inventoryFieldUnit = new TextField();
 
+        // Updating the text fields with appropriate properties when an item is selected
         final String[] updateName = new String[1];
-
         inventoryList.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 
             // if the item of the list is changed
@@ -252,6 +260,7 @@ public class ManagerViewController implements Initializable{
         inventoryFieldQuantity.setPromptText("Enter Item Quantity");
         inventoryFieldUnit.setPromptText("Enter Item Unit");
 
+        // Connecting the save button to update the database
         Button saveButton = new Button("Save");
         saveButton.setOnAction(e -> handleInventorySaveAction(updateName[0], inventoryFieldQuantity.getText(), inventoryFieldUnit.getText(), modalStage));
 
@@ -274,10 +283,13 @@ public class ManagerViewController implements Initializable{
 
     @FXML
     void handleUpdateMenuButton(ActionEvent event) {
+
+        // New modal stage to lock interaction with other windows
         Stage modalStage = new Stage();
-        modalStage.initModality(Modality.APPLICATION_MODAL); // Block interaction with other windows
+        modalStage.initModality(Modality.APPLICATION_MODAL);
         modalStage.setTitle("Add New Menu Item");
 
+        // Scroll pane to hold the recipe items of the menu itmes
         ScrollPane recipeScroll = new ScrollPane();
         recipeScroll.setPadding(new Insets(10));
 
@@ -285,7 +297,7 @@ public class ManagerViewController implements Initializable{
         Label instructionLabel = new Label("New Menu Item Details:");
         instructionLabel.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 13));
 
-
+        // Labels and Text Fields asking the user for a new menu item info
         HBox descriptionHeaders = new HBox(5);
         Label nameLabel = new Label("Name: ");
         nameLabel.setPrefWidth(130);
@@ -296,7 +308,6 @@ public class ManagerViewController implements Initializable{
         Label categoryLabel = new Label("Category: ");
         categoryLabel.setPrefWidth(90);
         descriptionHeaders.getChildren().addAll(nameLabel, priceLabel, caloriesLabel, categoryLabel);
-
         HBox descriptionHbox = new HBox(5);
         TextField nameField = new TextField();
         nameField.setPrefWidth(130);
@@ -308,11 +319,10 @@ public class ManagerViewController implements Initializable{
         categoryField.setPrefWidth(90);
         descriptionHbox.getChildren().addAll(nameField, priceField, caloriesField, categoryField);
 
+        // Section to allow user to enter in recipe quantity, units, and items
         Label recipeDes = new Label("Menu Item Recipe");
         recipeDes.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 13));
-
         modalVBox.getChildren().addAll(instructionLabel, descriptionHeaders, descriptionHbox, recipeDes);
-
         HBox recipeHeader = new HBox(10);
         Label nameHeader = new Label("Item Name");
         nameHeader.setPrefWidth(120);
@@ -321,11 +331,12 @@ public class ManagerViewController implements Initializable{
         Label unitHeader = new Label("Unit");
         unitHeader.setPrefWidth(120);
 
+        // Setting the recipe items to be a part of a scroll pane then modal
         recipeHeader.getChildren().addAll(nameHeader, qtyHeader, unitHeader);
         modalVBox.getChildren().add(recipeHeader);
 
+        // Populating recipe boxes with items that the user selected
         VBox recipeContainer = new VBox(10);
-
         setCheckedItems();
         for(int i = 0; i < checkedItems.size(); i++){
             HBox recipeItem = new HBox(10);
@@ -348,6 +359,7 @@ public class ManagerViewController implements Initializable{
         modalVBox.getChildren().add(recipeScroll);
         modalVBox.setPadding(new Insets(20));
 
+        // Adding a new row to allow the user to enter in a new item
         Button addItemButton = new Button("Add Item to Recipe");
         addItemButton.setOnAction((ActionEvent e) ->{
             TextField nameFiled = new TextField();
@@ -363,15 +375,18 @@ public class ManagerViewController implements Initializable{
             newItem.getChildren().addAll(nameFiled, quantityField, unitField);
             recipeContainer.getChildren().add(newItem);
         });
+
+        // Updating the database with the contents of the new menu item through the modal
         Button saveButton = new Button("Save");
         saveButton.setOnAction(e -> handleMenuSaveAction(nameField.getText(), priceField.getText(), caloriesField.getText(), categoryField.getText(), modalStage));
 
+        // Setting modal contents and properties
         HBox buttonHbox = new HBox(10);
         buttonHbox.setAlignment(Pos.CENTER);
         buttonHbox.getChildren().addAll(addItemButton, saveButton);
         modalVBox.getChildren().addAll(buttonHbox);
 
-        // Show the modal window
+        // Showing the modal window
         Scene modalScene = new Scene(modalVBox, 420, 400);
         modalStage.setScene(modalScene);
         modalStage.showAndWait();
@@ -509,6 +524,7 @@ public class ManagerViewController implements Initializable{
 
     @FXML
     void close_menu(MouseEvent event) {
+        // Setting the side menu to close when press the icon
         TranslateTransition slide =  new TranslateTransition();
         slide.setDuration(Duration.seconds(0.5));
         slide.setNode(slide_menu);
@@ -526,6 +542,7 @@ public class ManagerViewController implements Initializable{
 
     @FXML
     void open_menu(MouseEvent event) {
+        // Setting the side menu to open when clicking the menu icon
         TranslateTransition slide =  new TranslateTransition();
         slide.setDuration(Duration.seconds(0.5));
         slide.setNode(slide_menu);
@@ -542,6 +559,8 @@ public class ManagerViewController implements Initializable{
     }
 
     public void setUpdateInventory(){
+
+        // Resetting the inventory items when inventory is added or updated
         checkInventory.clear();
         checkInventoryName.clear();
         String name = "";
@@ -549,32 +568,29 @@ public class ManagerViewController implements Initializable{
         int quant = 0;
         int id = 0;
 
-
+        // Requesting all inventory items from the database
         conn = DatabaseConnectionManager.getConnection();
-
-        // Array lists to keep track of elements in menu items
         VBox itemsVertical = new VBox(20);
-
         try {
             String sqlStatement = "SELECT * FROM inventory;";
             Statement stmt = conn.createStatement();
-
             ResultSet result = stmt.executeQuery(sqlStatement);
+
+            // Adding column header descriptions
             HBox toAdd = new HBox(20);
             toAdd.setStyle("-fx-border-color: black");
             toAdd.setPrefWidth(630);
             toAdd.setPadding(new Insets(10, 10, 10, 10) );
-
             Label nameLabel = new Label("Name");
             Label idLabel = new Label("Id");
             Label quantLabel = new Label("Qty");
             Label holdSpace = new Label("");
             CheckBox c = new CheckBox();
 
+            // Setting styles
             nameLabel.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 14));
             idLabel.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 14));
             quantLabel.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 14));
-
             holdSpace.setPrefWidth(30);
             nameLabel.setPrefWidth(430);
             idLabel.setPrefWidth(30);
@@ -583,6 +599,7 @@ public class ManagerViewController implements Initializable{
             toAdd.getChildren().addAll(holdSpace, idLabel, nameLabel, quantLabel);
             itemsVertical.getChildren().add(toAdd);
 
+            // Adding all xthe inventory items to the list
             while (result.next()) {
                 name = result.getString("name");
                 unit = result.getString("unit");
@@ -599,14 +616,15 @@ public class ManagerViewController implements Initializable{
                 quantLabel = new Label("" + quant);
                 c = new CheckBox();
 
+                // Creating new inventory items and adding them to the list to keep track
                 Inventory newItem = new Inventory(id, name, quant, unit);
                 checkInventory.add(c);
                 checkInventoryName.add(newItem);
 
+                // Stylizing items
                 nameLabel.setFont(Font.font("verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14));
                 idLabel.setFont(Font.font("verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14));
                 quantLabel.setFont(Font.font("verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14));
-
                 c.setPrefWidth(30);
                 nameLabel.setPrefWidth(400);
                 idLabel.setPrefWidth(30);
@@ -616,12 +634,10 @@ public class ManagerViewController implements Initializable{
                 itemsVertical.getChildren().add(toAdd);
             }
             managerScroll.setContent(itemsVertical);
-            managerScroll.setStyle("-fx-background-color:transparent;");
-        } catch (Exception e) {
+           } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error accessing Database.");
         }
-
     }
 
     @Override
@@ -629,21 +645,23 @@ public class ManagerViewController implements Initializable{
         menu_close.setVisible(false);
         menu_open.setVisible(true);
         slide_menu.setTranslateX(-100);
+        managerView = true;
         employeeView = false;
+
+        // Assigning functions to buttons
         updateInventoryButton.setOnAction(this::handleUpdateInventoryButton);
         addInventoryButton.setOnAction(this::handleAddInventoryButton);
         updateMenuButton.setOnAction(this::handleUpdateMenuButton);
         managerScroll.setPadding(new Insets(20, 20, 20, 20));
 
+        // Lists to keep track of inventory items and which ones are checked
         checkInventory = new ArrayList<>();
         checkInventoryName = new ArrayList<>();
         checkedItems = new ArrayList<>();
-        // populating the inventory
+
+        // Populating the inventory and see which items are low stock
         setUpdateInventory();
         populateLowStockPane();
-
-        // Variables to set from what was received from database
-        managerView = true;
     }
 
 

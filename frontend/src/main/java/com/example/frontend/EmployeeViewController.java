@@ -66,6 +66,7 @@ public class EmployeeViewController implements Initializable{
     private Stage primaryStage;
     private Boolean employeeView;
     ArrayList<Label> orderQuantList;
+    Connection conn;
 
     private ObservableList<OrderItem> currentOrder = FXCollections.observableArrayList();
 
@@ -283,7 +284,7 @@ public class EmployeeViewController implements Initializable{
         totalWithTax.setText("$0.00");
 
         // connecting to the database
-        Connection conn = DatabaseConnectionManager.getConnection();
+        conn = DatabaseConnectionManager.getConnection();
 
         // Variables to set from what was received from database
         String name = "";
