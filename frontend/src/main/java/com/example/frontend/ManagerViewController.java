@@ -2,10 +2,13 @@ package com.example.frontend;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 //
 import javafx.animation.TranslateTransition;
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -28,9 +31,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
+import javafx.collections.*;
+import javafx.beans.value.*;
+
+import com.example.frontend.DatabaseOperations.Inventory;
 
 public class ManagerViewController implements Initializable{
 
@@ -51,9 +60,14 @@ public class ManagerViewController implements Initializable{
     @FXML
     private ImageView switchBtn;
     private Boolean employeeView;
-    
+
+    @FXML
+    private Pane lowStockPane;
+
     @FXML
     private Button updateInventoryButton;
+    @FXML
+    private Button addInventoryButton;
 
     @FXML
     private Button updateMenuButton;
@@ -62,9 +76,11 @@ public class ManagerViewController implements Initializable{
     private Button switchSceneBtn;
     @FXML
     private Boolean managerView;
-
     Connection conn;
-    
+
+    ArrayList<CheckBox> checkInventory;
+    ArrayList<Inventory> checkInventoryName;
+    ArrayList<Inventory> checkedItems;
     @FXML
     void switchSceneButtonClicked(ActionEvent event) {
         try {
@@ -87,8 +103,6 @@ public class ManagerViewController implements Initializable{
         }
     }
 
-    
-
     @FXML
     void switchButton(MouseEvent event) {
         try {
@@ -110,11 +124,53 @@ public class ManagerViewController implements Initializable{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
 
+    void populateLowStockPane(){
+        ScrollPane inventoryScroll = new ScrollPane();
+        inventoryScroll.setPrefSize(290, 575);
+        VBox lowStockVBox = new VBox(10);
+        lowStockVBox.setPrefWidth(270);
+        lowStockVBox.setPadding(new Insets(25));
+        Label header = new Label("Low Stock Itmes");
+        header.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 22));
+        Label description = new Label("These items are low stock, we reccomend that you restock them before they run out.");
+        description.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 12));
+        description.wrapTextProperty().setValue(true);
+        description.setPrefWidth(285);
+        lowStockVBox.getChildren().addAll(header, description);
+
+        String name = "";
+        int qty = 0;
+        String unit = "";
+
+        try{
+            //Asking for all the menu items from the database
+            Statement stmt = conn.createStatement();
+            String sqlStatement = "SELECT name, quantity, unit FROM inventory WHERE quantity < 100;";
+            ResultSet result = stmt.executeQuery(sqlStatement);
+
+            while (result.next()) {
+                name = result.getString("name");
+                qty = result.getInt("quantity");
+                unit = result.getString("unit");
+                Label toAdd = new Label("Item: " + name + "\nQuanitiy remaining: " + qty + " "  +  unit);
+                toAdd.setPrefWidth(270);
+                toAdd.setFont(Font.font("verdana", FontWeight.NORMAL, FontPosture.REGULAR, 12));
+                toAdd.wrapTextProperty().setValue(true);
+                lowStockVBox.getChildren().add(toAdd);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            System.out.println("Error accessing Database.");
+        }
+
+        inventoryScroll.setContent(lowStockVBox);
+        lowStockPane.getChildren().add(inventoryScroll);
     }
 
     @FXML
-    void handleUpdateInventoryButton(ActionEvent event) {
+    void handleAddInventoryButton(ActionEvent event) {
         Stage modalStage = new Stage();
         modalStage.initModality(Modality.APPLICATION_MODAL); // Block interaction with other windows
         modalStage.setTitle("Update Inventory");
@@ -141,6 +197,79 @@ public class ManagerViewController implements Initializable{
         modalStage.setScene(modalScene);
         modalStage.showAndWait();
     }
+    @FXML
+    void handleUpdateInventoryButton(ActionEvent event) {
+        Stage modalStage = new Stage();
+        modalStage.initModality(Modality.APPLICATION_MODAL); // Block interaction with other windows
+        modalStage.setTitle("Update Inventory");
+
+        ComboBox inventoryList = new ComboBox();
+        ArrayList<Inventory> inventoryItems = new ArrayList<Inventory>();
+        try {
+            String sqlStatement = "SELECT * FROM Inventory;";
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery(sqlStatement);
+
+            while (result.next()) {
+                int id = result.getInt("Id");
+                String name = result.getString("Name");
+                int qty = result.getInt("Quantity");
+                String unit = result.getString("Unit");
+                Inventory toAdd = new Inventory(id, name, qty, unit);
+                inventoryItems.add(toAdd);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Error accessing Database.");
+        }
+
+        inventoryList.getItems().addAll(FXCollections.observableArrayList(inventoryItems));
+
+        Label instructionLabel = new Label("Select Inventory Item:");
+        Label quantityLabel = new Label("Quantity to add:");
+        TextField inventoryFieldQuantity = new TextField();
+        TextField inventoryFieldUnit = new TextField();
+
+        final String[] updateName = new String[1];
+
+        inventoryList.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+
+            // if the item of the list is changed
+            public void changed(ObservableValue ov, Number value, Number new_value)
+            {
+                // set the text for the label to the selected item
+                instructionLabel.setText("Current stock: " + inventoryItems.get(new_value.intValue()).getQuantity());
+                inventoryFieldUnit.setText("" + inventoryItems.get(new_value.intValue()).getUnit());
+                updateName[0] = inventoryItems.get(new_value.intValue()).getName();
+            }
+        });
+
+        // Define the modal content
+        VBox modalVBox = new VBox(10);
+        modalVBox.setPadding(new Insets(10));
+
+        inventoryFieldQuantity.setPromptText("Enter Item Quantity");
+        inventoryFieldUnit.setPromptText("Enter Item Unit");
+
+        Button saveButton = new Button("Save");
+        saveButton.setOnAction(e -> handleInventorySaveAction(updateName[0], inventoryFieldQuantity.getText(), inventoryFieldUnit.getText(), modalStage));
+
+        modalVBox.getChildren().addAll(instructionLabel, inventoryList, quantityLabel, inventoryFieldQuantity, inventoryFieldUnit, saveButton);
+
+        // Show the modal window
+        Scene modalScene = new Scene(modalVBox, 280, 230);
+        modalStage.setScene(modalScene);
+        modalStage.showAndWait();
+    }
+
+    void setCheckedItems(){
+        checkedItems.clear();
+        for(int i = 0; i < checkInventory.size(); i++){
+            if (checkInventory.get(i).isSelected()){
+                checkedItems.add(checkInventoryName.get(i));
+            }
+        }
+    }
 
     @FXML
     void handleUpdateMenuButton(ActionEvent event) {
@@ -148,10 +277,20 @@ public class ManagerViewController implements Initializable{
         modalStage.initModality(Modality.APPLICATION_MODAL); // Block interaction with other windows
         modalStage.setTitle("Update Menu");
 
-        // Define the modal content
         VBox modalVBox = new VBox(10);
+        Label instructionLabel = new Label("Enter Menu Item Details:");
+        modalVBox.getChildren().add(instructionLabel);
+
+        setCheckedItems();
+        for(int i = 0; i < checkedItems.size(); i++){
+            HBox recipeItem = new HBox(5);
+//            TextField
+        }
+
+        // Define the modal content
+
         modalVBox.setPadding(new Insets(10));
-        Label instructionLabel = new Label("Enter Menu Details:");
+
         TextField name = new TextField();
         TextField price = new TextField();
         TextField calories = new TextField();
@@ -165,7 +304,7 @@ public class ManagerViewController implements Initializable{
         Button saveButton = new Button("Save");
         saveButton.setOnAction(e -> handleMenuSaveAction(name.getText(), price.getText(), calories.getText(), category.getText(), modalStage));
 
-        modalVBox.getChildren().addAll(instructionLabel, name, price, calories, category, saveButton);
+//        modalVBox.getChildren().addAll(instructionLabel, name, price, calories, category, saveButton);
 
         // Show the modal window
         Scene modalScene = new Scene(modalVBox, 300, 300);
@@ -179,7 +318,7 @@ public class ManagerViewController implements Initializable{
         System.out.println("Quantity: " + quantity);
         System.out.println("Unit: " + unit);
     
-        Connection conn = DatabaseConnectionManager.getConnection();
+        conn = DatabaseConnectionManager.getConnection();
         PreparedStatement pstmtCheck = null;
         PreparedStatement pstmtUpdate = null;
         PreparedStatement pstmtInsert = null;
@@ -236,8 +375,8 @@ public class ManagerViewController implements Initializable{
             modalStage.close();
         }
         setUpdateInventory();
+        populateLowStockPane();
     }
-    
 
     private void handleMenuSaveAction(String name, String price, String calories, String category, Stage modalStage) {
         System.out.println("Updating Menu Item:");
@@ -246,7 +385,7 @@ public class ManagerViewController implements Initializable{
         System.out.println("Calories: " + calories);
         System.out.println("Category: " + category);
     
-        Connection conn = DatabaseConnectionManager.getConnection();
+        conn = DatabaseConnectionManager.getConnection();
         PreparedStatement pstmtCheck = null;
         PreparedStatement pstmtUpdate = null;
         PreparedStatement pstmtInsert = null;
@@ -302,8 +441,6 @@ public class ManagerViewController implements Initializable{
             modalStage.close();
         }
     }
-    
-
 
     @FXML
     void close_menu(MouseEvent event) {
@@ -340,14 +477,18 @@ public class ManagerViewController implements Initializable{
     }
 
     public void setUpdateInventory(){
+        checkInventory.clear();
+        checkInventoryName.clear();
         String name = "";
-        String quant = "";
-        String id = "";
+        String unit = "";
+        int quant = 0;
+        int id = 0;
+
 
         conn = DatabaseConnectionManager.getConnection();
+
         // Array lists to keep track of elements in menu items
         VBox itemsVertical = new VBox(20);
-
 
         try {
             String sqlStatement = "SELECT * FROM inventory;";
@@ -378,20 +519,23 @@ public class ManagerViewController implements Initializable{
 
             while (result.next()) {
                 name = result.getString("name");
-                quant = result.getString("quantity");
-                id = result.getString("id");
+                unit = result.getString("unit");
+                quant = result.getInt("quantity");
+                id = result.getInt("id");
 
                 toAdd = new HBox(20);
                 toAdd.setStyle("-fx-border-color: black");
                 toAdd.setPrefWidth(500);
                 toAdd.setPadding(new Insets(10, 10, 10, 10) );
 
-
-
                 nameLabel = new Label(name);
-                idLabel = new Label(id);
-                quantLabel = new Label(quant);
+                idLabel = new Label("" + id);
+                quantLabel = new Label("" + quant);
                 c = new CheckBox();
+
+                Inventory newItem = new Inventory(id, name, quant, unit);
+                checkInventory.add(c);
+                checkInventoryName.add(newItem);
 
                 nameLabel.setFont(Font.font("verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14));
                 idLabel.setFont(Font.font("verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14));
@@ -405,13 +549,11 @@ public class ManagerViewController implements Initializable{
                 toAdd.getChildren().addAll(c, idLabel, nameLabel, quantLabel);
                 itemsVertical.getChildren().add(toAdd);
             }
-
             managerScroll.setContent(itemsVertical);
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error accessing Database.");
         }
-
 
     }
 
@@ -422,11 +564,16 @@ public class ManagerViewController implements Initializable{
         slide_menu.setTranslateX(-100);
         employeeView = false;
         updateInventoryButton.setOnAction(this::handleUpdateInventoryButton);
+        addInventoryButton.setOnAction(this::handleAddInventoryButton);
         updateMenuButton.setOnAction(this::handleUpdateMenuButton);
         managerScroll.setPadding(new Insets(20, 20, 20, 20));
 
+        checkInventory = new ArrayList<>();
+        checkInventoryName = new ArrayList<>();
+        checkedItems = new ArrayList<>();
         // populating the inventory
         setUpdateInventory();
+        populateLowStockPane();
 
         // Variables to set from what was received from database
         managerView = true;

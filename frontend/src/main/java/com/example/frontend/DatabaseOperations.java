@@ -130,9 +130,48 @@ public class DatabaseOperations {
             return quantity;
         }
 
-        public String getName() { return name; }
+        public String getName() {
+            return name;
+        }
 
-        public Double getPrice() {return price; }
+        public Double getPrice() {
+            return price;
+        }
     }
 
+    public static class Inventory {
+        private final int id;
+        private final String name;
+        private final int quantity;
+        private final String unit;
+
+
+        public Inventory(int menuItemId, String name, int quantity, String unit) {
+            this.id = menuItemId;
+            this.quantity = quantity;
+            this.name = name;
+            this.unit = unit;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public int getQuantity() {
+            return quantity;
+        }
+
+        public String getUnit() {
+            return unit;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
 }
