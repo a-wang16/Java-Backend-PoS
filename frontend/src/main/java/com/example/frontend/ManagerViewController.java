@@ -568,18 +568,19 @@ public class ManagerViewController implements Initializable{
             Label nameLabel = new Label("Name");
             Label idLabel = new Label("Id");
             Label quantLabel = new Label("Qty");
+            Label holdSpace = new Label("");
             CheckBox c = new CheckBox();
 
             nameLabel.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 14));
             idLabel.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 14));
             quantLabel.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 14));
 
-            c.setPrefWidth(30);
-            nameLabel.setPrefWidth(400);
+            holdSpace.setPrefWidth(30);
+            nameLabel.setPrefWidth(430);
             idLabel.setPrefWidth(30);
             quantLabel.setPrefWidth(40);
 
-            toAdd.getChildren().addAll(c, idLabel, nameLabel, quantLabel);
+            toAdd.getChildren().addAll(holdSpace, idLabel, nameLabel, quantLabel);
             itemsVertical.getChildren().add(toAdd);
 
             while (result.next()) {
