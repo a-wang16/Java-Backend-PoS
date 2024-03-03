@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.frontend.LoginController">
+<VBox alignment="CENTER" spacing="10.0" prefWidth="1245.0" prefHeight="846.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.frontend.LoginController">
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
