@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.sql.*;
-
 import javafx.geometry.Pos;
 import javafx.scene.control.DatePicker;
 
@@ -18,14 +17,16 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -61,7 +62,7 @@ public class ManagerGraphViewController implements Initializable{
 
     private Properties readProperties() {
         Properties prop = new Properties();
-        try (InputStream input = StartApplication.class.getResourceAsStream("config.properties")) {
+        try (InputStream input = StartApplication.class.getResourceAsStream("com/example/frontend/config.properties")) {
             prop.load(input);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -72,27 +73,21 @@ public class ManagerGraphViewController implements Initializable{
     @FXML
     void switchButton(MouseEvent event) {
         try {
-            Stage stage = (Stage) switchBtn.getScene().getWindow();
-
-            String name = "";
-            if (employeeView){
-                System.out.println("Switching to employee");
-                name = "employee-entry-view.fxml";
-                employeeView = false;
-            }
-            else{
-                System.out.println("Switching to manager");
-                name = "manager-view.fxml";
-                employeeView = true;
-            }
-            FXMLLoader loader = new FXMLLoader(StartApplication.class.getResource(name));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/frontend/login.fxml"));
             Parent root = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
             stage.setScene(new Scene(root));
             stage.show();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("View Switch Failed");
+            alert.setContentText("Unable to load the login view.");
+            alert.showAndWait();
         }
-
     }
 
     @FXML

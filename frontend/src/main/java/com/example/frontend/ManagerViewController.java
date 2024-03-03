@@ -11,6 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.fxml.FXMLLoader;
@@ -106,24 +107,22 @@ public class ManagerViewController implements Initializable{
 
     @FXML
     void switchButton(MouseEvent event) {
-        // Switching bewtween manager view and menu
         try {
-            Stage stage = (Stage) switchBtn.getScene().getWindow();
-            String name = "";
-            if (employeeView){
-                name = "manager-view.fxml";
-                employeeView = false;
-            }
-            else{
-                name = "employee-entry-view.fxml";
-                employeeView = true;
-            }
-            FXMLLoader loader = new FXMLLoader(StartApplication.class.getResource(name));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/frontend/login.fxml"));
             Parent root = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
             stage.setScene(new Scene(root));
             stage.show();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            // Optionally, you can use an alert to notify the user that the view switch failed
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("View Switch Failed");
+            alert.setContentText("Unable to load the login view.");
+            alert.showAndWait();
         }
     }
 
