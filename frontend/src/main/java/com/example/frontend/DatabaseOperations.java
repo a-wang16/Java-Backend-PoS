@@ -5,11 +5,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class DatabaseOperations {
+
+
     public static void createOrderAndUpdateInventory(int employeeId, List<OrderItem> orderItems, String orderCustomerName) {
         Connection conn = DatabaseConnectionManager.getConnection();
         try {
@@ -107,6 +110,45 @@ public class DatabaseOperations {
         }
     }
 
+    public static boolean authenticate(String username, String password) {
+        String sql = "SELECT * FROM Employee WHERE Name = ? AND Password = ?";
+        try (Connection conn = DatabaseConnectionManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            System.out.println("Authentication error: " + e.getMessage());
+        }
+        return false;
+    }
+
+    public static List<Employee> fetchAllEmployees() {
+        List<Employee> employees = new ArrayList<>();
+        String sql = "SELECT ID, Name, Position FROM Employee";
+
+        try (Connection conn = DatabaseConnectionManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                int id = rs.getInt("ID");
+                String name = rs.getString("Name");
+                String position = rs.getString("Position");
+                Employee employee = new Employee(id, name, position);
+                employees.add(employee);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching employees: " + e.getMessage());
+        }
+        return employees;
+    }
 
     public static class OrderItem {
         private final int menuItemId;
@@ -174,4 +216,38 @@ public class DatabaseOperations {
             return name;
         }
     }
+
+    public static class Employee {
+        private final int id;
+        private final String name;
+        private final String position;
+
+        public Employee(int id, String name, String position) {
+            this.id = id;
+            this.name = name;
+            this.position = position;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getPosition() {
+            return position;
+        }
+
+        public boolean isManager() {
+            return "Manager".equalsIgnoreCase(position);
+        }
+
+        @Override
+        public String toString() {
+            return name + " - " + position;
+        }
+    }
+
 }

@@ -18,12 +18,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -140,42 +138,28 @@ public class EmployeeViewController implements Initializable{
         }
     }
 
-    private Properties readProperties() {
-        Properties prop = new Properties();
-        try (InputStream input = StartApplication.class.getResourceAsStream("config.properties")) {
-            prop.load(input);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        return prop;
-    }
-
    // Function to switch pages
-    @FXML
-    void switchButton(MouseEvent event) {
-        try {
-            Stage stage = (Stage) switchBtn.getScene().getWindow();
+   @FXML
+   void switchButton(MouseEvent event) {
+       try {
+           FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/frontend/login.fxml"));
+           Parent root = loader.load();
 
-            String name = "";
-            if (employeeView){
-                System.out.println("Switching to manager");
-                name = "manager-view.fxml";
-                employeeView = false;
-            }
-            else{
-                System.out.println("Switching to employee");
-                name = "employee-entry-view.fxml";
-                employeeView = true;
-            }
-            FXMLLoader loader = new FXMLLoader(StartApplication.class.getResource(name));
-            Parent root = loader.load();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+           Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-    }
+           stage.setScene(new Scene(root));
+           stage.show();
+       } catch (IOException e) {
+           e.printStackTrace();
+           // Optionally, you can use an alert to notify the user that the view switch failed
+           Alert alert = new Alert(Alert.AlertType.ERROR);
+           alert.setTitle("Error");
+           alert.setHeaderText("View Switch Failed");
+           alert.setContentText("Unable to load the login view.");
+           alert.showAndWait();
+       }
+   }
+
 
     @FXML
     void close_menu(MouseEvent event) {
@@ -275,8 +259,6 @@ public class EmployeeViewController implements Initializable{
 
         orderQuantList = new ArrayList<>();
 
-
-        Properties prop = readProperties();
 
         // Setting the order total
         orderTotalPrice = 0.0;
