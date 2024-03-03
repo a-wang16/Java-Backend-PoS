@@ -11,7 +11,15 @@ import java.util.List;
 import java.util.Map;
 
 public class DatabaseOperations {
+    private static Employee currentEmployee;
 
+    public static void setCurrentEmployee(Employee employee) {
+        currentEmployee = employee;
+    }
+
+    public static Employee getCurrentEmployee() {
+        return currentEmployee;
+    }
 
     public static void createOrderAndUpdateInventory(int employeeId, List<OrderItem> orderItems, String orderCustomerName) {
         Connection conn = DatabaseConnectionManager.getConnection();

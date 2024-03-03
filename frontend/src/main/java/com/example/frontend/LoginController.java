@@ -32,6 +32,8 @@ public class LoginController {
         String password = passwordField.getText();
 
         if (selectedEmployee != null && DatabaseOperations.authenticate(selectedEmployee.getName(), password)) {
+            DatabaseOperations.setCurrentEmployee(selectedEmployee);
+
             if (selectedEmployee.isManager()) {
                 openView("manager-view.fxml");
             } else {
