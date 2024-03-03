@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
@@ -24,10 +25,19 @@
                <children>
                   <Pane layoutX="439.0" layoutY="188.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <Pane fx:id="graphContainer" layoutX="112.0" layoutY="224.0" prefHeight="414.0" prefWidth="880.0" style="-fx-background-color: eeeeee;" />
-                        <Pane fx:id="graphButtonContainer" layoutX="88.0" layoutY="28.0" prefHeight="79.0" prefWidth="317.0" style="-fx-background-color: eeeeee;">
+                        <Pane fx:id="graphContainer" layoutX="91.0" layoutY="224.0" prefHeight="415.0" prefWidth="750.0" style="-fx-background-color: eeeeee;" />
+                        <Pane fx:id="graphButtonContainer" layoutX="115.0" layoutY="55.0" prefHeight="147.0" prefWidth="215.0" style="-fx-background-color: eeeeee;">
                            <children>
-                              <Button fx:id="salesTrendButton" layoutX="80.0" layoutY="28.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="143.0" text="Sales Trend" />
+                              <Button fx:id="salesTrendButton" layoutX="38.0" layoutY="77.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="143.0" text="Sales Trend" />
+                           </children>
+                        </Pane>
+                        <Pane fx:id="graphButtonContainer1" layoutX="882.0" layoutY="434.0" prefHeight="203.0" prefWidth="215.0" style="-fx-background-color: eeeeee;">
+                           <children>
+                              <Button fx:id="productUsageButton" layoutX="29.0" layoutY="154.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="154.0" text="Display Product Usage" />
+                              <DatePicker fx:id="productEndDate" layoutX="29.0" layoutY="110.0" prefHeight="10.0" prefWidth="150.0" />
+                              <DatePicker fx:id="productStartDate" layoutX="29.0" layoutY="48.0" prefHeight="10.0" prefWidth="150.0" />
+                              <Label layoutX="31.0" layoutY="24.0" prefHeight="17.0" prefWidth="71.0" text="Start Date" />
+                              <Label layoutX="31.0" layoutY="84.0" prefHeight="17.0" prefWidth="71.0" text="End Date" />
                            </children>
                         </Pane>
                      </children>
