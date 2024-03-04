@@ -56,6 +56,14 @@ public class ManagerGraphViewController implements Initializable{
     private Button productUsageButton;
     private Stage primaryStage;
     private Boolean employeeView;
+
+    @FXML
+    private Button whatSellsTogetherButton;
+    @FXML 
+    private DatePicker productEndDate1;
+    @FXML 
+    private DatePicker productStartDate1;
+
     @FXML
     private DatePicker productEndDate;
     @FXML
@@ -172,6 +180,32 @@ public class ManagerGraphViewController implements Initializable{
 
     }
 
+    public void showWhatSellsTogether(ActionEvent event){
+        graphContainer.getChildren().clear();
+        ScrollPane graphScroll = new ScrollPane();
+        graphContainer.getChildren().add(graphScroll);
+        String name = "";
+        int qty = 0;
+        try{
+            LocalDate startDate = productStartDate1.getValue();
+            String start = startDate.getMonthValue() + "/" + startDate.getDayOfMonth() + "/" + startDate.getYear();
+            LocalDate endDate = productEndDate1.getValue();
+            String end = endDate.getMonthValue() + "/" + endDate.getDayOfMonth() + "/" + endDate.getYear();
+
+            
+            String sqlStatement = "SELECT i.Name, SUM(r.qty) AS inventory_used FROM Customer_Order co, Menu_Item mi JOIN Recipe r ON mi.ID = r.Menu_item JOIN Inventory i ON r.Inventory_item = i.ID WHERE Created_At >= '" + start +"' AND Created_At < '" + end +"' GROUP BY i.Name ORDER BY inventory_used DESC;";
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery(sqlStatement);
+
+            //insert table to show from database
+
+
+        } catch (Exception e){
+            e.printStackTrace();
+            System.out.println("Error accessing Database.");
+        }
+    }
+
     public void showProductUsage(ActionEvent event){
         graphContainer.getChildren().clear();
         ScrollPane graphScroll = new ScrollPane();
@@ -206,6 +240,9 @@ public class ManagerGraphViewController implements Initializable{
             System.out.println("Error accessing Database.");
         }
     }
+
+
+
 
 
     @Override
