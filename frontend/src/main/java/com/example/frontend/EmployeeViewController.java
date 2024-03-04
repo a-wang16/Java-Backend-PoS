@@ -62,6 +62,9 @@ public class EmployeeViewController implements Initializable{
     @FXML
     private ImageView switchBtn;
     private Stage primaryStage;
+
+    @FXML
+    private Label userProfile;
     private Boolean employeeView;
     ArrayList<Label> orderQuantList;
     Connection conn;
@@ -344,6 +347,8 @@ public class EmployeeViewController implements Initializable{
                 });
                 menu_tilePanes.get(index).getChildren().add(btn);
             }
+
+            userProfile.setText("Profile: " + DatabaseOperations.currentEmployee.getName());
 
             // adding the children
             menu_scroll.setContent(menu_layout);

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public class DatabaseOperations {
-    private static Employee currentEmployee;
+    public static Employee currentEmployee;
 
     public static void setCurrentEmployee(Employee employee) {
         currentEmployee = employee;
