@@ -223,7 +223,7 @@ public class EmployeeViewController implements Initializable{
         continueButton.setOnAction(e -> {
             // Handle the continue action
             dialogStage.close();
-            DatabaseOperations.createOrderAndUpdateInventory(1, currentOrder, customerName);
+            DatabaseOperations.createOrderAndUpdateInventory(DatabaseOperations.currentEmployee.getId(), currentOrder, customerName);
             currentOrder.clear();
             checkoutVbox.getChildren().clear();
             orderQuantList.clear();
