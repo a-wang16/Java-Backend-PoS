@@ -31,11 +31,20 @@
                               <Button fx:id="salesTrendButton" layoutX="38.0" layoutY="77.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="143.0" text="Sales Trend" />
                            </children>
                         </Pane>
-                        <Pane fx:id="graphButtonContainer1" layoutX="882.0" layoutY="434.0" prefHeight="203.0" prefWidth="215.0" style="-fx-background-color: eeeeee;">
+                        <Pane fx:id="graphButtonContainer1" layoutX="890.0" layoutY="224.0" prefHeight="203.0" prefWidth="215.0" style="-fx-background-color: eeeeee;">
                            <children>
                               <Button fx:id="productUsageButton" layoutX="29.0" layoutY="154.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="154.0" text="Display Product Usage" />
                               <DatePicker fx:id="productEndDate" layoutX="29.0" layoutY="110.0" prefHeight="10.0" prefWidth="150.0" />
                               <DatePicker fx:id="productStartDate" layoutX="29.0" layoutY="48.0" prefHeight="10.0" prefWidth="150.0" />
+                              <Label layoutX="31.0" layoutY="24.0" prefHeight="17.0" prefWidth="71.0" text="Start Date" />
+                              <Label layoutX="31.0" layoutY="84.0" prefHeight="17.0" prefWidth="71.0" text="End Date" />
+                           </children>
+                        </Pane>
+                        <Pane fx:id="graphButtonContainer11" layoutX="890.0" layoutY="436.0" prefHeight="203.0" prefWidth="215.0" style="-fx-background-color: eeeeee;">
+                           <children>
+                              <Button fx:id="whatSellsTogetherButton" layoutX="20.0" layoutY="156.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="176.0" text="Display What Sells Together" />
+                              <DatePicker fx:id="productEndDate1" layoutX="29.0" layoutY="110.0" prefHeight="10.0" prefWidth="150.0" />
+                              <DatePicker fx:id="productStartDate1" layoutX="29.0" layoutY="48.0" prefHeight="10.0" prefWidth="150.0" />
                               <Label layoutX="31.0" layoutY="24.0" prefHeight="17.0" prefWidth="71.0" text="Start Date" />
                               <Label layoutX="31.0" layoutY="84.0" prefHeight="17.0" prefWidth="71.0" text="End Date" />
                            </children>
