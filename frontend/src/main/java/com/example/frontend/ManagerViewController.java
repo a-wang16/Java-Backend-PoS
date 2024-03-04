@@ -357,32 +357,12 @@ public class ManagerViewController implements Initializable{
         modalVBox.getChildren().add(recipeScroll);
         modalVBox.setPadding(new Insets(20));
 
-        // Adding a new row to allow the user to enter in a new item
-        Button addItemButton = new Button("Add Item to Recipe");
-        addItemButton.setOnAction((ActionEvent e) ->{
-            TextField nameFiled = new TextField();
-            nameFiled.setPrefWidth(120);
-            nameFiled.setPromptText("Enter item name");
-            TextField quantityField = new TextField();
-            quantityField.setPromptText("Enter item quanity");
-            quantityField.setPrefWidth(80);
-            TextField unitField = new TextField();
-            unitField.setPromptText("Enter item unit");
-            unitField.setPrefWidth(120);
-            HBox newItem = new HBox(10);
-            newItem.getChildren().addAll(nameFiled, quantityField, unitField);
-            recipeContainer.getChildren().add(newItem);
-        });
-
         // Updating the database with the contents of the new menu item through the modal
         Button saveButton = new Button("Save");
         saveButton.setOnAction(e -> handleMenuSaveAction(nameField.getText(), priceField.getText(), caloriesField.getText(), categoryField.getText(), modalStage));
 
-        // Setting modal contents and properties
-        HBox buttonHbox = new HBox(10);
-        buttonHbox.setAlignment(Pos.CENTER);
-        buttonHbox.getChildren().addAll(addItemButton, saveButton);
-        modalVBox.getChildren().addAll(buttonHbox);
+        saveButton.setAlignment(Pos.CENTER);
+        modalVBox.getChildren().addAll(saveButton);
 
         // Showing the modal window
         Scene modalScene = new Scene(modalVBox, 420, 400);
