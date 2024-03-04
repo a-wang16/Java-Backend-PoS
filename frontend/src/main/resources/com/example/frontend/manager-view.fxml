@@ -74,7 +74,7 @@
                                 <Image url="@images/back.png" />
                             </image>
                         </ImageView>
-                  <Label layoutX="89.0" layoutY="20.0" prefHeight="18.0" prefWidth="189.0" text="Profile">
+                  <Label layoutX="89.0" layoutY="20.0" prefHeight="18.0" prefWidth="189.0" text="Profile: Rev X">
                      <font>
                         <Font size="20.0" />
                      </font>
