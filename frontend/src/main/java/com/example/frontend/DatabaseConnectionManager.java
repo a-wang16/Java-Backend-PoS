@@ -1,11 +1,11 @@
 package com.example.frontend;
 
-import com.example.frontend.MainSceneController;
-
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Properties;
-import java.io.InputStream;
 
 public class DatabaseConnectionManager {
     private static Connection connection = null;
@@ -14,29 +14,67 @@ public class DatabaseConnectionManager {
     }
 
     public static Connection getConnection() {
-        if (connection == null) {
+        if (connection == null || isConnectionClosed(connection)) {
             synchronized (DatabaseConnectionManager.class) {
-                if (connection == null) {
+                if (connection == null || isConnectionClosed(connection)) {
+                    Properties prop = readProperties();
+                    if (prop == null) {
+                        throw new RuntimeException("Unable to load database properties.");
+                    }
+
+                    String databaseName = prop.getProperty("database.name");
+                    String databaseUser = prop.getProperty("database.user");
+                    String databasePassword = prop.getProperty("database.password");
+                    String databaseHost = prop.getProperty("database.host");
+                    String databaseUrl = String.format("jdbc:postgresql://%s/%s", databaseHost, databaseName);
+
                     try {
-                        Properties prop = new Properties();
-                        InputStream input = MainSceneController.class.getResourceAsStream("config.properties");
-                        prop.load(input);
-
-                        String database_name = prop.getProperty("database.name");
-                        String database_user = prop.getProperty("database.user");
-                        String database_password = prop.getProperty("database.password");
-                        String database_host = prop.getProperty("database.host");
-                        String database_url = String.format("jdbc:postgresql://%s/%s", database_host, database_name);
-
-                        connection = DriverManager.getConnection(database_url, database_user, database_password);
+                        connection = DriverManager.getConnection(databaseUrl, databaseUser, databasePassword);
                         System.out.println("Successfully connected to the database.");
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    } catch (SQLException e) {
                         System.err.println("Failed to create database connection.");
+                        e.printStackTrace();
                     }
                 }
             }
         }
         return connection;
     }
+
+    private static boolean isConnectionClosed(Connection conn) {
+        try {
+            return conn == null || conn.isClosed();
+        } catch (SQLException e) {
+            return true;
+        }
+    }
+
+    private static Properties readProperties() {
+        Properties prop = new Properties();
+        String propFileName = "com/example/frontend/config.properties";
+
+        InputStream input = Thread.currentThread().getContextClassLoader().getResourceAsStream(propFileName);
+        if (input == null) {
+            input = DatabaseConnectionManager.class.getResourceAsStream("/" + propFileName);
+        }
+
+        if (input == null) {
+            throw new RuntimeException("Unable to find " + propFileName);
+        }
+
+        try {
+            prop.load(input);
+        } catch (IOException ex) {
+            throw new RuntimeException("Error loading " + propFileName, ex);
+        } finally {
+            try {
+                input.close();
+            } catch (IOException ex) {
+            }
+        }
+
+        return prop;
+    }
+
+
 }

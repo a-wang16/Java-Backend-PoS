@@ -2,11 +2,8 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Slider?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -26,48 +23,25 @@
                         <Insets top="5.0" />
                     </BorderPane.margin>
                <children>
-                  <AnchorPane layoutY="1.0" prefHeight="769.0" prefWidth="734.0">
+                  <Pane layoutX="439.0" layoutY="188.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-
-                        <TextField layoutX="-47.0" layoutY="23.0" prefHeight="47.0" prefWidth="294.0" text="Search" />
-                        <Label layoutX="274.0" layoutY="14.0" prefHeight="18.0" prefWidth="50.0" text="View By" />
-                        <CheckBox layoutX="274.0" layoutY="38.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="69.0" style="-fx-background-color: dfdfdf;" text="24H" />
-                        <CheckBox layoutX="346.0" layoutY="39.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="68.0" style="-fx-background-color: dfdfdf;" text="7D" />
-                        <CheckBox layoutX="417.0" layoutY="39.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="74.0" style="-fx-background-color: dfdfdf;" text="1M" />
-                        
-                        <Pane layoutX="-49.0" layoutY="107.0" prefHeight="518.0" prefWidth="1081.0" style="-fx-background-color: #C5C5C5;">
-                            <children>
-                                <Pane layoutX="25" layoutY="25" prefHeight="468.0" prefWidth="258.0" style="-fx-background-color: #757575;">
-                                    <children>
-                                        <Pane layoutX="0" layoutY="0" prefHeight="68.0" prefWidth="258.0" style="-fx-background-color: #959595;" />
-                                        <Label layoutX="50" layoutY="0" prefHeight="68.0" prefWidth="258.0" style="-fx-text-fill: #f0f0f0; -fx-font-size: 20pt;" text="Items" />
-                                    </children>
-                                </Pane>
-                                <Pane layoutX="308" layoutY="25" prefHeight="468.0" prefWidth="748.0" style="-fx-background-color: #f5f5f5;">
-                                    <children>
-                                        <ImageView fitHeight="468.0" fitWidth="757.0" layoutX="0" layoutY="0" pickOnBounds="true" preserveRatio="true" >
-                                            <image> <Image url="@images/grid.png" /> </image>
-                                        </ImageView>
-                                    </children>
-                                </Pane>
-                                
-                            </children>
-                        </Pane>
-                        
-                        <Pane layoutX="221.0" layoutY="656.0" prefHeight="100.0" prefWidth="467.0">
+                        <Pane fx:id="graphContainer" layoutX="91.0" layoutY="224.0" prefHeight="415.0" prefWidth="750.0" style="-fx-background-color: eeeeee;" />
+                        <Pane fx:id="graphButtonContainer" layoutX="115.0" layoutY="55.0" prefHeight="147.0" prefWidth="215.0" style="-fx-background-color: eeeeee;">
                            <children>
-                              <Label alignment="CENTER" layoutX="98.0" layoutY="32.0" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: #C5C5C5;" text="1" />
-                              <Button layoutX="393.0" layoutY="37.0" mnemonicParsing="false" style="-fx-background-color: ffffff;" text="Next" />
-                              <Button layoutX="20.0" layoutY="37.0" mnemonicParsing="false" style="-fx-background-color: ffffff;" text="Previous" />
-                              <Label alignment="CENTER" layoutX="158.0" layoutY="32.0" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: #C5C5C5;" text="2" />
-                              <Label alignment="CENTER" layoutX="216.0" layoutY="32.0" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: #C5C5C5;" text="3" />
-                              <Label alignment="CENTER" layoutX="276.0" layoutY="32.0" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: #C5C5C5;" text="4" />
-                              <Label alignment="CENTER" layoutX="337.0" layoutY="32.0" prefHeight="35.0" prefWidth="35.0" style="-fx-background-color: #C5C5C5;" text="5" />
+                              <Button fx:id="salesTrendButton" layoutX="38.0" layoutY="77.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="143.0" text="Sales Trend" />
                            </children>
                         </Pane>
-
+                        <Pane fx:id="graphButtonContainer1" layoutX="882.0" layoutY="434.0" prefHeight="203.0" prefWidth="215.0" style="-fx-background-color: eeeeee;">
+                           <children>
+                              <Button fx:id="productUsageButton" layoutX="29.0" layoutY="154.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="154.0" text="Display Product Usage" />
+                              <DatePicker fx:id="productEndDate" layoutX="29.0" layoutY="110.0" prefHeight="10.0" prefWidth="150.0" />
+                              <DatePicker fx:id="productStartDate" layoutX="29.0" layoutY="48.0" prefHeight="10.0" prefWidth="150.0" />
+                              <Label layoutX="31.0" layoutY="24.0" prefHeight="17.0" prefWidth="71.0" text="Start Date" />
+                              <Label layoutX="31.0" layoutY="84.0" prefHeight="17.0" prefWidth="71.0" text="End Date" />
+                           </children>
+                        </Pane>
                      </children>
-                  </AnchorPane>
+                  </Pane>
                </children>
                 </AnchorPane>
             </center>

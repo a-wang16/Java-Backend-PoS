@@ -1,6 +1,5 @@
 package com.example.frontend;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -19,12 +18,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -39,11 +36,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import com.example.frontend.DatabaseConnectionManager;
 import com.example.frontend.DatabaseOperations.OrderItem;
 
 
-public class MainSceneController implements Initializable{
+public class EmployeeViewController implements Initializable{
 
     @FXML
     private ImageView menu_close;
@@ -57,22 +53,18 @@ public class MainSceneController implements Initializable{
     private ScrollPane menu_scroll;
     @FXML
     private ScrollPane checkoutScroll;
-
     @FXML
     private Label totalWithTax;
-
     @FXML
     private Label orderTotal;
     private double orderTotalPrice;
-
     private VBox checkoutVbox;
-
     @FXML
     private ImageView switchBtn;
     private Stage primaryStage;
     private Boolean employeeView;
-
     ArrayList<Label> orderQuantList;
+    Connection conn;
 
     private ObservableList<OrderItem> currentOrder = FXCollections.observableArrayList();
 
@@ -80,12 +72,15 @@ public class MainSceneController implements Initializable{
     public void addItemToOrder(int menuItemId, int quantity, String name, double price) {
         for (int i = 0; i < currentOrder.size(); i++) {
             OrderItem item = currentOrder.get(i);
+
             // the item already exists, just update the quantity
             if (item.getMenuItemId() == menuItemId) {
                 int newQuantity = item.getQuantity() + quantity;
                 orderQuantList.get(i).setText("" + newQuantity);
                 currentOrder.set(currentOrder.indexOf(item), new OrderItem(menuItemId, newQuantity, name, price));
                 orderTotalPrice += price;
+
+                // Updating the GUI
                 String subTotal = String.format("$%.2f", orderTotalPrice);
                 String total = String.format("$%.2f", orderTotalPrice * 1.0825);
                 orderTotal.setText(subTotal);
@@ -94,7 +89,7 @@ public class MainSceneController implements Initializable{
             }
         }
 
-        // the item doesn't exist, add to the order total
+        // the item doesn't exist, add to the order total and summary page
         currentOrder.add(new OrderItem(menuItemId, quantity, name, price));
         Label orderName = new Label(name);
         orderName.setPrefWidth(170);
@@ -107,6 +102,7 @@ public class MainSceneController implements Initializable{
         HBox container = new HBox(10);
         container.setPadding(new Insets(5, 2, 5, 2));
 
+        // setting the new item as a child pane so that it appears in the summary
         container.getChildren().addAll(orderName, orderQuant, orderPrice);
         checkoutVbox.getChildren().add(container);
 
@@ -121,6 +117,8 @@ public class MainSceneController implements Initializable{
     // clear out the order summary
     @FXML
     void cancelOrder(){
+
+        // Resetting all necessary values to clear the order summary
         currentOrder.clear();
         orderTotalPrice = 0.0;
         orderQuantList.clear();
@@ -140,42 +138,28 @@ public class MainSceneController implements Initializable{
         }
     }
 
-    private Properties readProperties() {
-        Properties prop = new Properties();
-        try (InputStream input = HelloApplication.class.getResourceAsStream("config.properties")) {
-            prop.load(input);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        return prop;
-    }
-
    // Function to switch pages
-    @FXML
-    void switchButton(MouseEvent event) {
-        try {
-            Stage stage = (Stage) switchBtn.getScene().getWindow();
+   @FXML
+   void switchButton(MouseEvent event) {
+       try {
+           FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/frontend/login.fxml"));
+           Parent root = loader.load();
 
-            String name = "";
-            if (employeeView){
-                System.out.println("Switching to manager");
-                name = "manager-view.fxml";
-                employeeView = false;
-            }
-            else{
-                System.out.println("Switching to employee");
-                name = "gemma.fxml";
-                employeeView = true;
-            }
-            FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource(name));
-            Parent root = loader.load();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+           Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-    }
+           stage.setScene(new Scene(root));
+           stage.show();
+       } catch (IOException e) {
+           e.printStackTrace();
+           // Optionally, you can use an alert to notify the user that the view switch failed
+           Alert alert = new Alert(Alert.AlertType.ERROR);
+           alert.setTitle("Error");
+           alert.setHeaderText("View Switch Failed");
+           alert.setContentText("Unable to load the login view.");
+           alert.showAndWait();
+       }
+   }
+
 
     @FXML
     void close_menu(MouseEvent event) {
@@ -277,15 +261,13 @@ public class MainSceneController implements Initializable{
         orderQuantList = new ArrayList<>();
 
 
-        Properties prop = readProperties();
-
         // Setting the order total
         orderTotalPrice = 0.0;
         orderTotal.setText("$0.00");
         totalWithTax.setText("$0.00");
 
         // connecting to the database
-        Connection conn = DatabaseConnectionManager.getConnection();
+        conn = DatabaseConnectionManager.getConnection();
 
         // Variables to set from what was received from database
         String name = "";
@@ -344,7 +326,8 @@ public class MainSceneController implements Initializable{
                 }
 
                 // creating a new button with the menu item and adding it to the appropriate category
-                Button btn = new Button(name + "\n" + price);
+                String priceMenu = String.format("$%.2f", price);
+                Button btn = new Button(name + "\n" + priceMenu);
                 btn.setPrefHeight(120);
                 btn.setPrefWidth(120);
                 btn.wrapTextProperty().setValue(true);

@@ -1,63 +1,70 @@
 package com.example.frontend;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.sql.*;
-import java.util.ArrayList;
+
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.DatePicker;
+
+import java.time.LocalDate;
 import java.util.Properties;
 import java.util.ResourceBundle;
-//
 import javafx.animation.TranslateTransition;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.PieChart;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.TilePane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.TextAlignment;
-import javafx.stage.Modality;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import com.example.frontend.DatabaseConnectionManager;
-
 public class ManagerGraphViewController implements Initializable{
-
+    @FXML
+    private Pane graphButtonContainer;
+    @FXML
+    private Pane graphContainer;
     @FXML
     private ImageView menu_close;
     @FXML
     private ImageView menu_open;
     @FXML
+    private Button salesTrendButton;
+    @FXML
     private AnchorPane slide_menu;
     @FXML
-    private AnchorPane menu_pane;
-    @FXML
-    private ScrollPane menu_scroll;
-
-    @FXML
     private ImageView switchBtn;
+    @FXML
+    private Button productUsageButton;
     private Stage primaryStage;
     private Boolean employeeView;
+    @FXML
+    private DatePicker productEndDate;
+    @FXML
+    private DatePicker productStartDate;
+    Connection conn;
 
     private Properties readProperties() {
         Properties prop = new Properties();
-        try (InputStream input = HelloApplication.class.getResourceAsStream("config.properties")) {
+        try (InputStream input = StartApplication.class.getResourceAsStream("com/example/frontend/config.properties")) {
             prop.load(input);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -68,27 +75,21 @@ public class ManagerGraphViewController implements Initializable{
     @FXML
     void switchButton(MouseEvent event) {
         try {
-            Stage stage = (Stage) switchBtn.getScene().getWindow();
-
-            String name = "";
-            if (employeeView){
-                System.out.println("Switching to employee");
-                name = "gemma.fxml";
-                employeeView = false;
-            }
-            else{
-                System.out.println("Switching to manager");
-                name = "manager-view.fxml";
-                employeeView = true;
-            }
-            FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource(name));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/frontend/login.fxml"));
             Parent root = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
             stage.setScene(new Scene(root));
             stage.show();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("View Switch Failed");
+            alert.setContentText("Unable to load the login view.");
+            alert.showAndWait();
         }
-
     }
 
     @FXML
@@ -129,85 +130,102 @@ public class ManagerGraphViewController implements Initializable{
         this.primaryStage = primaryStage;
     }
 
-    @Override
-    public void initialize(URL arg0, ResourceBundle arg1) {
-        employeeView = true;
-        menu_scroll = new ScrollPane();
-        // initializing the vertical menu
-        menu_close.setVisible(false);
-        menu_open.setVisible(true);
-        slide_menu.setTranslateX(-100);
-
-        // connecting to the database
-        Connection conn = DatabaseConnectionManager.getConnection();
-
-        String name = "";
-        String category = "";
-        ArrayList<String> categories = new ArrayList<String>();
-        ArrayList<VBox> menu_categories = new ArrayList<VBox>();
-        ArrayList<TilePane> menu_tilePanes = new ArrayList<TilePane>();
-        VBox menu_layout = new VBox();
+    public void showSalesTrend(ActionEvent event){
+        graphContainer.getChildren().clear();
+        ScrollPane graphScroll = new ScrollPane();
+        graphScroll.setPrefWidth(750);
         try{
-            //Asking for all of the menu items from the database
+            String sqlStatement = "SELECT EXTRACT(WEEK FROM co.Created_At) AS OrderWeek, SUM(oi.Quantity * mi.Price) AS TotalRevenue FROM Order_Items oi JOIN Menu_Item mi ON oi.Menu_Item_ID = mi.ID JOIN Customer_Order co ON oi.Order_ID = co.ID GROUP BY OrderWeek ORDER BY OrderWeek;";
             Statement stmt = conn.createStatement();
-            String sqlStatement = "SELECT * FROM menu_item;";
-
             ResultSet result = stmt.executeQuery(sqlStatement);
 
-            while (result.next()) {
-                name = result.getString("name");
-                category = result.getString("category");
+            XYChart.Series series = new XYChart.Series();
+            int week = 0;
+            Double revenue = 0.0;
 
-                // seeing if we already have the category that this menu item is a part of
-                int index = categories.indexOf(category);
+            Double maxRevenue = 0.0;
 
-                // we do not have the category made, make a new one and add it to the list
-                if (index == -1){
-                    categories.add(category);
+            while(result.next()){
+                week = result.getInt("orderweek");
+                revenue = result.getDouble("totalrevenue");
 
-                    // New Vbox to hold the ti
-                    VBox add_VBox = new VBox();
-                    add_VBox.setPrefWidth(650);// prefWidth
-                    add_VBox.setSpacing(10);
-
-                    // New label displaying which category it is
-                    Label add_Label = new Label(category);
-                    add_Label.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 16));
-
-                    // New tile pane to hold food items within
-                    TilePane new_pane = new TilePane();
-                    new_pane.setPrefColumns(4);
-                    new_pane.setHgap(40);
-                    new_pane.setVgap(20);
-
-                    // adding the children to the container
-                    add_VBox.getChildren().add(add_Label);
-                    add_VBox.getChildren().add(new_pane);
-
-                    // adding the container to the page
-                    menu_categories.add(add_VBox);
-                    menu_tilePanes.add(new_pane);
-                    index = categories.indexOf(category);
-                    menu_layout.getChildren().add(add_VBox);
+                if (revenue > maxRevenue){
+                    maxRevenue = revenue;
                 }
 
-                // creating a new button with the menu item and adding it to the appropriate category
-                Button btn = new Button(name);
-                btn.setPrefHeight(120);
-                btn.setPrefWidth(120);
-                btn.wrapTextProperty().setValue(true);
-                btn.setTextAlignment(TextAlignment.CENTER);
-                btn.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 12));
-                menu_tilePanes.get(index).getChildren().add(btn);
+                series.getData().add(new XYChart.Data(week, revenue));
             }
+            NumberAxis xAxis = new NumberAxis(0, 52, 1);
+            NumberAxis yAxis = new NumberAxis(0, (maxRevenue * 1.10), ((maxRevenue * 1.10) / 50));
+            LineChart linechart = new LineChart(xAxis, yAxis);
+            linechart.getData().add(series);
+            linechart.setPrefWidth(900);
+            graphScroll.setContent(linechart);
+            graphContainer.getChildren().add(graphScroll);
 
-            menu_scroll.setContent(menu_layout);
-            menu_layout.setSpacing(70);
-            menu_layout.setPadding(new Insets(60, 60, 60, 60));
         } catch (Exception e){
             e.printStackTrace();
             System.out.println("Error accessing Database.");
         }
+
+
+
+    }
+
+    public void showProductUsage(ActionEvent event){
+        graphContainer.getChildren().clear();
+        ScrollPane graphScroll = new ScrollPane();
+        graphContainer.getChildren().add(graphScroll);
+        String name = "";
+        int qty = 0;
+        try{
+            LocalDate startDate = productStartDate.getValue();
+            String start = startDate.getMonthValue() + "/" + startDate.getDayOfMonth() + "/" + startDate.getYear();
+            LocalDate endDate = productEndDate.getValue();
+            String end = endDate.getMonthValue() + "/" + endDate.getDayOfMonth() + "/" + endDate.getYear();
+
+            String sqlStatement = "SELECT i.Name, SUM(r.qty) AS inventory_used FROM Customer_Order co, Menu_Item mi JOIN Recipe r ON mi.ID = r.Menu_item JOIN Inventory i ON r.Inventory_item = i.ID WHERE Created_At >= '" + start +"' AND Created_At < '" + end +"' GROUP BY i.Name ORDER BY inventory_used DESC;";
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery(sqlStatement);
+
+            ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
+
+            while(result.next()) {
+                name = result.getString("name");
+                qty = result.getInt("inventory_used");
+                pieChartData.add(new PieChart.Data(name, qty));
+            }
+            PieChart chart = new PieChart(pieChartData);
+            chart.setTitle("Product Usage From: " + start + " - " + end);
+            chart.setPrefSize(600, 400);
+            graphScroll.setPadding(new Insets(20, 75, 20,75));
+            graphScroll.setContent(chart);
+
+        } catch (Exception e){
+            e.printStackTrace();
+            System.out.println("Error accessing Database.");
+        }
+    }
+
+
+    @Override
+    public void initialize(URL arg0, ResourceBundle arg1) {
+        menu_close.setVisible(false);
+        menu_open.setVisible(true);
+        slide_menu.setTranslateX(-100);
+
+        salesTrendButton.setOnAction(this::showSalesTrend);
+        productUsageButton.setOnAction((this::showProductUsage));
+
+        conn = DatabaseConnectionManager.getConnection();
+
+
+//       try{
+//
+//        } catch (Exception e){
+//            e.printStackTrace();
+//            System.out.println("Error accessing Database.");
+//        }
     }
     
 }
