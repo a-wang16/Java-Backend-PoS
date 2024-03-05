@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import javafx.animation.TranslateTransition;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -36,6 +37,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 public class ManagerGraphViewController implements Initializable{
     @FXML
@@ -180,26 +185,52 @@ public class ManagerGraphViewController implements Initializable{
 
     }
 
+    @FXML
     public void showWhatSellsTogether(ActionEvent event){
         graphContainer.getChildren().clear();
         ScrollPane graphScroll = new ScrollPane();
         graphContainer.getChildren().add(graphScroll);
-        String name = "";
-        int qty = 0;
+    
         try{
             LocalDate startDate = productStartDate1.getValue();
             String start = startDate.getMonthValue() + "/" + startDate.getDayOfMonth() + "/" + startDate.getYear();
             LocalDate endDate = productEndDate1.getValue();
             String end = endDate.getMonthValue() + "/" + endDate.getDayOfMonth() + "/" + endDate.getYear();
-
+    
             
-            String sqlStatement = "SELECT i.Name, SUM(r.qty) AS inventory_used FROM Customer_Order co, Menu_Item mi JOIN Recipe r ON mi.ID = r.Menu_item JOIN Inventory i ON r.Inventory_item = i.ID WHERE Created_At >= '" + start +"' AND Created_At < '" + end +"' GROUP BY i.Name ORDER BY inventory_used DESC;";
+            String sqlStatement = "SELECT a.Menu_Item_ID AS Menu_Item_ID1, b.Menu_Item_ID AS Menu_Item_ID2, COUNT(*) AS Times_Ordered_Together FROM Order_Items a JOIN Order_Items b ON a.Order_ID = b.Order_ID AND a.Menu_Item_ID < b.Menu_Item_ID JOIN Customer_Order co ON a.Order_ID = co.ID WHERE co.Created_At >= '" + start +"' AND co.Created_At < '" + end +"' GROUP BY a.Menu_Item_ID, b.Menu_Item_ID ORDER BY Times_Ordered_Together DESC;";
+            
             Statement stmt = conn.createStatement();
             ResultSet result = stmt.executeQuery(sqlStatement);
+    
+            TableView<ObservableList<String>> tableView = new TableView<>();
+    
+            while (result.next()) {
+                ObservableList<String> row = FXCollections.observableArrayList();
+                row.add(result.getString("Menu_Item_ID1"));
+                row.add(result.getString("Menu_Item_ID2"));
+                row.add(result.getString("Times_Ordered_Together"));
+                tableView.getItems().add(row);
+            }
+    
+            TableColumn<ObservableList<String>, String> col1 = new TableColumn<>("Menu Item ID 1");
+            col1.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(0)));
+            TableColumn<ObservableList<String>, String> col2 = new TableColumn<>("Menu Item ID 2");
+            col2.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(1)));
+            TableColumn<ObservableList<String>, String> col3 = new TableColumn<>("Times Ordered Together");
+            col3.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(2)));
+    
 
-            //insert table to show from database
+            // Set preferred width for each column
+            col1.setPrefWidth(250);
+            col2.setPrefWidth(250);
+            col3.setPrefWidth(250); 
 
-
+            
+            tableView.getColumns().addAll(col1, col2, col3);
+    
+            graphScroll.setContent(tableView);
+    
         } catch (Exception e){
             e.printStackTrace();
             System.out.println("Error accessing Database.");
