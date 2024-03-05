@@ -8,6 +8,7 @@ import java.sql.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 
 import java.time.LocalDate;
 import java.util.Properties;
@@ -46,7 +47,7 @@ import javafx.util.Duration;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import java.sql.Statement;
 import java.sql.ResultSet;
@@ -195,15 +196,15 @@ public class ManagerGraphViewController implements Initializable{
             String start = startDate.getMonthValue() + "/" + startDate.getDayOfMonth() + "/" + startDate.getYear();
             LocalDate endDate = productEndDate2.getValue();
             String end = endDate.getMonthValue() + "/" + endDate.getDayOfMonth() + "/" + endDate.getYear();
+
+            Label tableName = new Label("Sales Trend From: " + start + " - " + end);
+            tableName.setMinHeight(40);
+            tableName.setMinWidth(790);
+            tableName.setAlignment(Pos.CENTER);
+            tableName.setFont(new Font(17));
+            graphContainer.getChildren().add(tableName);
     
-            String sqlStatement = "SELECT mi.Name AS Menu_Item_Name, " +
-                "SUM(oi.Quantity) AS Total_Quantity_Sold " +
-                "FROM Order_Items oi " +
-                "JOIN Menu_Item mi ON oi.Menu_Item_ID = mi.ID " +
-                "JOIN Customer_Order co ON oi.Order_ID = co.ID " +
-                "WHERE co.Created_At >= '" + start + "' AND co.Created_At < '" + end + "' " +
-                "GROUP BY mi.Name " +
-                "ORDER BY Total_Quantity_Sold DESC;";
+            String sqlStatement = "SELECT mi.Name as MenuName, mi.Price * SUM(oi.Quantity) AS TotalRevenue, SUM(oi.Quantity) AS TotalSold FROM Menu_Item mi JOIN Order_Items oi ON mi.ID = oi.Menu_Item_ID JOIN Customer_Order co ON co.ID = oi.Order_ID WHERE Created_At >= '" + start + "' AND Created_At < '"+ end + "' GROUP BY mi.Name, mi.Price ORDER BY TotalRevenue DESC;";
     
             Statement stmt = conn.createStatement();
             ResultSet result = stmt.executeQuery(sqlStatement);
@@ -213,23 +214,28 @@ public class ManagerGraphViewController implements Initializable{
     
             while (result.next()) {
                 ObservableList<String> row = FXCollections.observableArrayList();
-                row.add(result.getString("Menu_Item_Name")); // Use the correct alias here
-                row.add(Integer.toString(result.getInt("Total_Quantity_Sold")));
+                row.add(result.getString("MenuName")); // Use the correct alias here
+                row.add(result.getString("TotalRevenue"));
+                row.add(result.getString("TotalSold"));
                 tableView.getItems().add(row);
             }
     
             TableColumn<ObservableList<String>, String> itemNameCol = new TableColumn<>("Menu Item Name");
             itemNameCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(0)));
     
-            TableColumn<ObservableList<String>, String> totalQuantityCol = new TableColumn<>("Total Quantity Sold (Sales)");
-            totalQuantityCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(1)));
+            TableColumn<ObservableList<String>, String> totalRevenueCol = new TableColumn<>("Total Revenue");
+            totalRevenueCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(1)));
+
+            TableColumn<ObservableList<String>, String> totalQuantityCol = new TableColumn<>("Total Quantity Sold");
+            totalQuantityCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(2)));
     
-            itemNameCol.setPrefWidth(350);
-            totalQuantityCol.setPrefWidth(350);
+            itemNameCol.setPrefWidth(450);
+            totalRevenueCol.setPrefWidth(150);
+            totalQuantityCol.setPrefWidth(150);
     
-            tableView.getColumns().addAll(itemNameCol, totalQuantityCol);
+            tableView.getColumns().addAll(itemNameCol, totalRevenueCol, totalQuantityCol);
     
-            graphScroll.setPadding(new Insets(20, 25, 20, 50));
+            graphScroll.setPadding(new Insets(40, 25, 20, 20));
             graphScroll.setContent(tableView);
     
     
@@ -244,45 +250,58 @@ public class ManagerGraphViewController implements Initializable{
         graphContainer.getChildren().clear();
         ScrollPane graphScroll = new ScrollPane();
         graphContainer.getChildren().add(graphScroll);
-    
+        
+        
+
         try{
             LocalDate startDate = productStartDate1.getValue();
             String start = startDate.getMonthValue() + "/" + startDate.getDayOfMonth() + "/" + startDate.getYear();
             LocalDate endDate = productEndDate1.getValue();
             String end = endDate.getMonthValue() + "/" + endDate.getDayOfMonth() + "/" + endDate.getYear();
     
-            
-            String sqlStatement = "SELECT a.Menu_Item_ID AS Menu_Item_ID1, b.Menu_Item_ID AS Menu_Item_ID2, COUNT(*) AS Times_Ordered_Together FROM Order_Items a JOIN Order_Items b ON a.Order_ID = b.Order_ID AND a.Menu_Item_ID < b.Menu_Item_ID JOIN Customer_Order co ON a.Order_ID = co.ID WHERE co.Created_At >= '" + start +"' AND co.Created_At < '" + end +"' GROUP BY a.Menu_Item_ID, b.Menu_Item_ID ORDER BY Times_Ordered_Together DESC;";
+            Label tableName = new Label("Best Selling Combo From: " + start + " - " + end);
+            tableName.setMinHeight(40);
+            tableName.setMinWidth(790);
+            tableName.setAlignment(Pos.CENTER);
+            tableName.setFont(new Font(17));
+            graphContainer.getChildren().add(tableName);
+
+            String sqlStatement = "SELECT aMenu.name as Menu_Item_1, bMenu.name as Menu_Item_2, COUNT(*) AS Times_Ordered_Together FROM Order_Items a JOIN Order_Items b ON a.Order_ID = b.Order_ID AND a.Menu_Item_ID < b.Menu_Item_ID JOIN Menu_Item aMenu ON a.Menu_Item_ID = aMenu.ID JOIN Menu_Item bMenu ON b.Menu_Item_ID = bMenu.ID JOIN Customer_Order co ON co.ID = a.Order_ID WHERE Created_At >= '" + start + "' AND Created_At < '" + end + "' GROUP BY aMenu.name, bMenu.name ORDER BY Times_Ordered_Together DESC LIMIT 15;";
             
             Statement stmt = conn.createStatement();
             ResultSet result = stmt.executeQuery(sqlStatement);
     
             TableView<ObservableList<String>> tableView = new TableView<>();
+            tableView.setLayoutY(20);
+            tableView.setPrefSize(752, 400);
     
             while (result.next()) {
                 ObservableList<String> row = FXCollections.observableArrayList();
-                row.add(result.getString("Menu_Item_ID1"));
-                row.add(result.getString("Menu_Item_ID2"));
+                row.add(result.getString("Menu_Item_1"));
+                row.add(result.getString("Menu_Item_2"));
                 row.add(result.getString("Times_Ordered_Together"));
                 tableView.getItems().add(row);
             }
-    
-            TableColumn<ObservableList<String>, String> col1 = new TableColumn<>("Menu Item ID 1");
+            
+
+            TableColumn<ObservableList<String>, String> col1 = new TableColumn<>("Menu Item 1");
             col1.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(0)));
-            TableColumn<ObservableList<String>, String> col2 = new TableColumn<>("Menu Item ID 2");
+            TableColumn<ObservableList<String>, String> col2 = new TableColumn<>("Menu Item 2");
             col2.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(1)));
             TableColumn<ObservableList<String>, String> col3 = new TableColumn<>("Times Ordered Together");
             col3.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(2)));
     
 
             // Set preferred width for each column
-            col1.setPrefWidth(250);
-            col2.setPrefWidth(250);
-            col3.setPrefWidth(250); 
+            col1.setPrefWidth(300);
+            col2.setPrefWidth(300);
+            col3.setPrefWidth(150); 
 
-            
+
             tableView.getColumns().addAll(col1, col2, col3);
-    
+
+            graphScroll.setPadding(new Insets(40, 25, 20, 20));
+
             graphScroll.setContent(tableView);
     
         } catch (Exception e){
@@ -311,7 +330,7 @@ public class ManagerGraphViewController implements Initializable{
             BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
             barChart.setTitle("Product Usage From: " + start + " - " + end);
             
-            barChart.setPrefSize(700, 400);
+            barChart.setPrefSize(750, 400);
             xAxis.setLabel("Inventory Item");
             yAxis.setLabel("Amount Used");
             XYChart.Series<String, Number> series = new XYChart.Series<>();
@@ -325,7 +344,7 @@ public class ManagerGraphViewController implements Initializable{
 
             barChart.getData().add(series);
             
-            graphScroll.setPadding(new Insets(20, 25, 20, 50));
+            graphScroll.setPadding(new Insets(5, 25, 20, 20));
             graphScroll.setContent(barChart);
 
         } catch (Exception e) {
