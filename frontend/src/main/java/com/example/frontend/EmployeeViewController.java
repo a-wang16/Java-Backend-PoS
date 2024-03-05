@@ -349,6 +349,8 @@ public class EmployeeViewController implements Initializable{
             }
 
             userProfile.setText("Profile: " + DatabaseOperations.currentEmployee.getName());
+            userProfile.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 12));
+
 
             // adding the children
             menu_scroll.setContent(menu_layout);
