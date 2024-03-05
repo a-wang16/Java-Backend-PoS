@@ -235,8 +235,18 @@ public class ManagerGraphViewController implements Initializable{
         graphContainer.getChildren().add(graphScroll);
         try {
             LocalDate startDate = productStartDate2.getValue();
-            String start = startDate.getMonthValue() + "/" + startDate.getDayOfMonth() + "/" + startDate.getYear();
             LocalDate endDate = productEndDate2.getValue();
+            
+            if (startDate == null || endDate == null) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Data Retrieval Failed.");
+                alert.setHeaderText(null);
+                alert.setContentText("Please select both start and end dates before proceeding.");
+                alert.showAndWait();
+                return; 
+            }
+
+            String start = startDate.getMonthValue() + "/" + startDate.getDayOfMonth() + "/" + startDate.getYear();
             String end = endDate.getMonthValue() + "/" + endDate.getDayOfMonth() + "/" + endDate.getYear();
 
             Label tableName = new Label("Sales Trend From: " + start + " - " + end);
@@ -309,8 +319,16 @@ public class ManagerGraphViewController implements Initializable{
 
         try{
             LocalDate startDate = productStartDate1.getValue();
-            String start = startDate.getMonthValue() + "/" + startDate.getDayOfMonth() + "/" + startDate.getYear();
             LocalDate endDate = productEndDate1.getValue();
+            if (startDate == null || endDate == null) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Data Retrieval Failed.");
+                alert.setHeaderText(null);
+                alert.setContentText("Please select both start and end dates before proceeding.");
+                alert.showAndWait();
+                return; 
+            }
+            String start = startDate.getMonthValue() + "/" + startDate.getDayOfMonth() + "/" + startDate.getYear();
             String end = endDate.getMonthValue() + "/" + endDate.getDayOfMonth() + "/" + endDate.getYear();
     
             Label tableName = new Label("Best Selling Combo From: " + start + " - " + end);
@@ -375,8 +393,18 @@ public class ManagerGraphViewController implements Initializable{
         
         try {
             LocalDate startDate = productStartDate.getValue();
-            String start = startDate.getMonthValue() + "/" + startDate.getDayOfMonth() + "/" + startDate.getYear();
             LocalDate endDate = productEndDate.getValue();
+            
+            if (startDate == null || endDate == null) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Data Retrieval Failed.");
+                alert.setHeaderText(null);
+                alert.setContentText("Please select both start and end dates before proceeding.");
+                alert.showAndWait();
+                return; 
+            }
+
+            String start = startDate.getMonthValue() + "/" + startDate.getDayOfMonth() + "/" + startDate.getYear();
             String end = endDate.getMonthValue() + "/" + endDate.getDayOfMonth() + "/" + endDate.getYear();
 
             String sqlStatement = "SELECT i.Name, SUM(r.qty * oi.quantity) AS inventory_used FROM Menu_Item mi JOIN Order_Items oi ON mi.ID = oi.Menu_Item_ID JOIN Customer_Order co ON co.ID = oi.Order_ID JOIN Recipe r ON mi.ID = r.Menu_item JOIN Inventory i ON r.Inventory_item = i.ID WHERE co.Created_At >= '" + start +"' AND co.Created_At < '" + end + "' GROUP BY  i.Name ORDER BY inventory_used DESC;";
@@ -423,6 +451,17 @@ public class ManagerGraphViewController implements Initializable{
         
         try {
             LocalDate startDate = productStartDate3.getValue();
+            
+            if (startDate == null) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Data Retrieval Failed.");
+                alert.setHeaderText(null);
+                alert.setContentText("Please select both start and end dates before proceeding.");
+                alert.showAndWait();
+                return; 
+            }
+            
+            
             String start = startDate.getMonthValue() + "/" + startDate.getDayOfMonth() + "/" + startDate.getYear();
 
             Label tableName = new Label("Excess Inventory Starting From: " + start);
