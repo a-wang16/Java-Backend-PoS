@@ -87,7 +87,12 @@ public class ManagerGraphViewController implements Initializable{
     private DatePicker productEndDate;
     @FXML
     private DatePicker productStartDate;
+    @FXML 
+    private Button backButton;
+    
     Connection conn;
+
+
 
     private Properties readProperties() {
         Properties prop = new Properties();
@@ -97,6 +102,24 @@ public class ManagerGraphViewController implements Initializable{
             ex.printStackTrace();
         }
         return prop;
+    }
+    
+    @FXML
+    void backButtonHandle(MouseEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/frontend/manager-view.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("View Switch Failed");
+            alert.setContentText("Unable to load the login view.");
+            alert.showAndWait();
+        }
     }
 
     @FXML
