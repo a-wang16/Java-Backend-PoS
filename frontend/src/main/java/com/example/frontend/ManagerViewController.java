@@ -69,6 +69,8 @@ public class ManagerViewController implements Initializable{
 
     @FXML
     private Button updateMenuButton;
+    @FXML
+    private Label userProfile;
 
     @FXML
     private Button switchSceneBtn;
@@ -726,7 +728,10 @@ public class ManagerViewController implements Initializable{
         // Populating the inventory and see which items are low stock
         setUpdateInventory();
         populateLowStockPane();
+
+        userProfile.setText("Profile: " + DatabaseOperations.currentEmployee.getName());
+        userProfile.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 12));
+
+
     }
-
-
 }
