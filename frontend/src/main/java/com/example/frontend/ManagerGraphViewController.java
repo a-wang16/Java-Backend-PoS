@@ -96,6 +96,10 @@ public class ManagerGraphViewController implements Initializable{
     @FXML
     private DatePicker productEndDate2;
 
+    @FXML
+    private Button excessButton;
+    @FXML 
+    private DatePicker productStartDate3;
 
     Connection conn;
 
@@ -217,25 +221,24 @@ public class ManagerGraphViewController implements Initializable{
             Statement stmt = conn.createStatement();
             ResultSet result = stmt.executeQuery(sqlStatement);
     
-            TableView<ObservableList<Object>> tableView = new TableView<>();
-            tableView.setEditable(false);
+            TableView<ObservableList<String>> tableView = new TableView<>();
     
             while (result.next()) {
-                ObservableList<Object> row = FXCollections.observableArrayList();
+                ObservableList<String> row = FXCollections.observableArrayList();
                 row.add(result.getString("Menu_Item_Name"));
-                row.add(result.getInt("Total_Quantity_Sold"));
-                row.add(result.getDouble("Total_Revenue")); 
+                row.add(result.getString("Total_Quantity_Sold"));
+                row.add(result.getString("Total_Revenue")); 
                 tableView.getItems().add(row);
             }
     
-            TableColumn<ObservableList<Object>, String> itemNameCol = new TableColumn<>("Menu Item Name");
-            itemNameCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>((String)param.getValue().get(0)));
+            TableColumn<ObservableList<String>, String> itemNameCol = new TableColumn<>("Menu Item Name");
+            itemNameCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(0)));
     
-            TableColumn<ObservableList<Object>, Integer> totalQuantityCol = new TableColumn<>("Total Quantity Sold");
-            totalQuantityCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>((Integer)param.getValue().get(1)));
+            TableColumn<ObservableList<String>, String> totalQuantityCol = new TableColumn<>("Total Quantity Sold");
+            totalQuantityCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(1)));
     
-            TableColumn<ObservableList<Object>, Double> totalRevenueCol = new TableColumn<>("Total Revenue (USD)");
-            totalRevenueCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>((Double) param.getValue().get(2))); 
+            TableColumn<ObservableList<String>, String> totalRevenueCol = new TableColumn<>("Total Revenue (USD)");
+            totalRevenueCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(2))); 
     
             itemNameCol.setPrefWidth(450);
             totalQuantityCol.setPrefWidth(150);
@@ -360,8 +363,68 @@ public class ManagerGraphViewController implements Initializable{
         }
     }
 
+    public void showExcessInventory(ActionEvent event) {
+        graphContainer.getChildren().clear();
+        ScrollPane graphScroll = new ScrollPane();
+        graphContainer.getChildren().add(graphScroll);
+        
+        try {
+            LocalDate startDate = productStartDate3.getValue();
+            String start = startDate.getMonthValue() + "/" + startDate.getDayOfMonth() + "/" + startDate.getYear();
 
+            Label tableName = new Label("Excess Inventory Starting From: " + start);
+            tableName.setMinHeight(40);
+            tableName.setMinWidth(790);
+            tableName.setAlignment(Pos.CENTER);
+            tableName.setFont(new Font(17));
+            graphContainer.getChildren().add(tableName);
 
+            String sqlStatement = "SELECT i.Name, SUM(r.qty * oi.quantity) AS inventory_used, i.quantity AS current_inventory, (CAST (SUM(r.qty * oi.quantity) AS float) / (SUM(r.qty * oi.quantity) + i.quantity)) AS relative_performance FROM Menu_Item mi JOIN Order_Items oi ON mi.ID = oi.Menu_Item_ID JOIN Customer_Order co ON co.ID = oi.Order_ID JOIN Recipe r ON r.Menu_item = mi.ID JOIN Inventory i ON r.Inventory_item = i.ID WHERE co.Created_At >= '" + start + "' GROUP BY i.Name, i.quantity ORDER BY relative_performance ASC;";
+            
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery(sqlStatement);
+    
+            TableView<ObservableList<String>> tableView = new TableView<>();
+            tableView.setLayoutY(20);
+            tableView.setPrefSize(752, 400);
+    
+            while (result.next()) {
+                ObservableList<String> row = FXCollections.observableArrayList();
+                row.add(result.getString("name"));
+                row.add(result.getString("inventory_used"));
+                row.add(result.getString("current_inventory"));
+                row.add((String.valueOf(result.getDouble("relative_performance")*100)));
+                tableView.getItems().add(row);
+            }
+            
+
+            TableColumn<ObservableList<String>, String> col1 = new TableColumn<>("Inventory Item");
+            col1.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(0)));
+            TableColumn<ObservableList<String>, String> col2 = new TableColumn<>("Amount Used");
+            col2.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(1)));
+            TableColumn<ObservableList<String>, String> col3 = new TableColumn<>("Current Amount");
+            col3.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(2)));
+            TableColumn<ObservableList<String>, String> col4 = new TableColumn<>("Relative Sold (%)");
+            col4.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(3)));
+    
+
+            // Set preferred width for each column
+            col1.setPrefWidth(350);
+            col2.setPrefWidth(125);
+            col3.setPrefWidth(125); 
+            col4.setPrefWidth(150);
+
+            tableView.getColumns().addAll(col1, col2, col3, col4);
+
+            graphScroll.setPadding(new Insets(40, 25, 20, 20));
+
+            graphScroll.setContent(tableView);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error accessing Database.");
+        }
+    }
 
 
 
@@ -373,6 +436,7 @@ public class ManagerGraphViewController implements Initializable{
 
         salesTrendButton.setOnAction(this::showSalesTrend);
         productUsageButton.setOnAction((this::showProductUsage));
+        excessButton.setOnAction((this::showExcessInventory));
 
         conn = DatabaseConnectionManager.getConnection();
 
