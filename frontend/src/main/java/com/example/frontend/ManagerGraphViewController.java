@@ -39,16 +39,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.text.TextAlignment;
-import javafx.scene.text.TextBoundsType;
+import javafx.scene.text.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
+
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.Connection;
@@ -90,6 +88,8 @@ public class ManagerGraphViewController implements Initializable{
     private DatePicker productStartDate;
     @FXML 
     private Button backButton;
+    @FXML
+    private Label userProfile;
     
     @FXML 
     private DatePicker productStartDate2;
@@ -440,13 +440,8 @@ public class ManagerGraphViewController implements Initializable{
 
         conn = DatabaseConnectionManager.getConnection();
 
+        userProfile.setText("Profile: " + DatabaseOperations.currentEmployee.getName());
+        userProfile.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 12));
 
-//       try{
-//
-//        } catch (Exception e){
-//            e.printStackTrace();
-//            System.out.println("Error accessing Database.");
-//        }
     }
-    
 }
