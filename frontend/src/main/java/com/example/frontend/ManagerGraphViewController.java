@@ -186,54 +186,59 @@ public class ManagerGraphViewController implements Initializable{
         this.primaryStage = primaryStage;
     }
 
-    public void showSalesTrend(ActionEvent event){
+    public void showSalesTrend(ActionEvent event) {
         graphContainer.getChildren().clear();
         ScrollPane graphScroll = new ScrollPane();
         graphContainer.getChildren().add(graphScroll);
-        try{
+        try {
             LocalDate startDate = productStartDate2.getValue();
             String start = startDate.getMonthValue() + "/" + startDate.getDayOfMonth() + "/" + startDate.getYear();
             LocalDate endDate = productEndDate2.getValue();
             String end = endDate.getMonthValue() + "/" + endDate.getDayOfMonth() + "/" + endDate.getYear();
     
             String sqlStatement = "SELECT mi.Name AS Menu_Item_Name, " +
-                "SUM(oi.Quantity) AS Total_Quantity_Sold " +
-                "FROM Order_Items oi " +
-                "JOIN Menu_Item mi ON oi.Menu_Item_ID = mi.ID " +
-                "JOIN Customer_Order co ON oi.Order_ID = co.ID " +
-                "WHERE co.Created_At >= '" + start + "' AND co.Created_At < '" + end + "' " +
-                "GROUP BY mi.Name " +
-                "ORDER BY Total_Quantity_Sold DESC;";
+                    "SUM(oi.Quantity) AS Total_Quantity_Sold, " +
+                    "SUM(oi.Quantity * mi.Price) AS Total_Revenue " +
+                    "FROM Order_Items oi " +
+                    "JOIN Menu_Item mi ON oi.Menu_Item_ID = mi.ID " +
+                    "JOIN Customer_Order co ON oi.Order_ID = co.ID " +
+                    "WHERE co.Created_At >= '" + start + "' AND co.Created_At < '" + end + "' " +
+                    "GROUP BY mi.Name " +
+                    "ORDER BY Total_Quantity_Sold DESC;";
     
             Statement stmt = conn.createStatement();
             ResultSet result = stmt.executeQuery(sqlStatement);
     
-            TableView<ObservableList<String>> tableView = new TableView<>();
+            TableView<ObservableList<Object>> tableView = new TableView<>();
             tableView.setEditable(false);
     
             while (result.next()) {
-                ObservableList<String> row = FXCollections.observableArrayList();
-                row.add(result.getString("Menu_Item_Name")); // Use the correct alias here
-                row.add(Integer.toString(result.getInt("Total_Quantity_Sold")));
+                ObservableList<Object> row = FXCollections.observableArrayList();
+                row.add(result.getString("Menu_Item_Name"));
+                row.add(result.getInt("Total_Quantity_Sold"));
+                row.add(result.getDouble("Total_Revenue")); 
                 tableView.getItems().add(row);
             }
     
-            TableColumn<ObservableList<String>, String> itemNameCol = new TableColumn<>("Menu Item Name");
-            itemNameCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(0)));
+            TableColumn<ObservableList<Object>, String> itemNameCol = new TableColumn<>("Menu Item Name");
+            itemNameCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>((String)param.getValue().get(0)));
     
-            TableColumn<ObservableList<String>, String> totalQuantityCol = new TableColumn<>("Total Quantity Sold (Sales)");
-            totalQuantityCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(1)));
+            TableColumn<ObservableList<Object>, Integer> totalQuantityCol = new TableColumn<>("Total Quantity Sold");
+            totalQuantityCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>((Integer)param.getValue().get(1)));
     
-            itemNameCol.setPrefWidth(350);
-            totalQuantityCol.setPrefWidth(350);
+            TableColumn<ObservableList<Object>, Double> totalRevenueCol = new TableColumn<>("Total Revenue (USD)");
+            totalRevenueCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>((Double) param.getValue().get(2))); 
     
-            tableView.getColumns().addAll(itemNameCol, totalQuantityCol);
+            itemNameCol.setPrefWidth(250);
+            totalQuantityCol.setPrefWidth(250);
+            totalRevenueCol.setPrefWidth(250);
+    
+            tableView.getColumns().addAll(itemNameCol, totalQuantityCol, totalRevenueCol);
     
             graphScroll.setPadding(new Insets(20, 25, 20, 50));
             graphScroll.setContent(tableView);
     
-    
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error accessing Database.");
         }
