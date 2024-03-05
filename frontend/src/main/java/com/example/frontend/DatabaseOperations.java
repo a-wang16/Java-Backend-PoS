@@ -11,6 +11,10 @@ import java.util.List;
 import java.util.Map;
 
 public class DatabaseOperations {
+    /**
+      This DatabaseOperations class manages our requests to our backend database.
+     @author karlos
+     */
     public static Employee currentEmployee;
 
     public static void setCurrentEmployee(Employee employee) {
@@ -22,6 +26,11 @@ public class DatabaseOperations {
     }
 
     public static void createOrderAndUpdateInventory(int employeeId, List<OrderItem> orderItems, String orderCustomerName) {
+        /**
+         * This creates and order and updates inventory based on inventory item and a list of orderItems, and a customer name.
+         * @author karlos
+         */
+
         Connection conn = DatabaseConnectionManager.getConnection();
         try {
             conn.setAutoCommit(false);
@@ -119,6 +128,11 @@ public class DatabaseOperations {
     }
 
     public static boolean authenticate(String username, String password) {
+        /**
+         * This confirms if the user correctly typed in their password by sending a request to our database.
+         * @author karlos
+         */
+
         String sql = "SELECT * FROM Employee WHERE Name = ? AND Password = ?";
         try (Connection conn = DatabaseConnectionManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -138,6 +152,11 @@ public class DatabaseOperations {
     }
 
     public static List<Employee> fetchAllEmployees() {
+        /**
+         * This returns a list of Employee type class
+         * @author karlos
+         */
+
         List<Employee> employees = new ArrayList<>();
         String sql = "SELECT ID, Name, Position FROM Employee";
 
@@ -159,6 +178,7 @@ public class DatabaseOperations {
     }
 
     public static class OrderItem {
+
         private final int menuItemId;
         private final int quantity;
         private final String name;
@@ -189,13 +209,41 @@ public class DatabaseOperations {
         }
     }
 
+    /**
+     * The Inventory class represents an inventory item, typically for a menu item in a restaurant or a store.
+     * Each inventory item has a unique ID, a name, a quantity, and a unit of measurement.
+     * @author Jin Seok Oh
+     */
     public static class Inventory {
+
+        /**
+         * The unique identifier for the inventory item.
+         */
         private final int id;
+
+        /**
+         * The name of the inventory item.
+         */
         private final String name;
+
+        /**
+         * The quantity of the inventory item currently in stock.
+         */
         private int quantity;
+
+        /**
+         * The unit of measurement for the inventory item's quantity.
+         */
         private final String unit;
 
-
+        /**
+         * Constructs a new code Inventory object.
+         *
+         * @param menuItemId the unique identifier for the inventory item
+         * @param name       the name of the inventory item
+         * @param quantity   the quantity of the inventory item currently in stock
+         * @param unit       the unit of measurement for the inventory item's quantity
+         */
         public Inventory(int menuItemId, String name, int quantity, String unit) {
             this.id = menuItemId;
             this.quantity = quantity;
@@ -203,63 +251,125 @@ public class DatabaseOperations {
             this.unit = unit;
         }
 
+        /**
+         * Sets the quantity of the inventory item.
+         *
+         * @param quantity the new quantity of the inventory item
+         */
         public void setQuantity(int quantity) {
             this.quantity = quantity;
         }
 
+        /**
+         * Returns the name of the inventory item.
+         *
+         * @return the name of the inventory item
+         */
         public String getName() {
             return name;
         }
 
+        /**
+         * Returns the current quantity of the inventory item.
+         *
+         * @return the current quantity of the inventory item
+         */
         public int getQuantity() {
             return quantity;
         }
 
+        /**
+         * Returns the unit of measurement for the inventory item's quantity.
+         *
+         * @return the unit of measurement for the inventory item's quantity
+         */
         public String getUnit() {
             return unit;
         }
 
+        /**
+         * Returns the unique identifier for the inventory item.
+         *
+         * @return the unique identifier for the inventory item
+         */
         public int getId() {
             return id;
         }
 
+        /**
+         * Returns a string representation of the inventory item, which is its name.
+         *
+         * @return a string representation of the inventory item
+         */
         @Override
         public String toString() {
             return name;
         }
     }
 
+    /**
+     * Stores information for an employee read in from the database.
+     * @author Karlos
+     */
     public static class Employee {
         private final int id;
         private final String name;
         private final String position;
 
+        /**
+         * Parameterized constructor that sets the values associated with an employee
+         * @param id ID associated with the employee
+         * @param name The employee's name
+         * @param position The employee's position
+         */
         public Employee(int id, String name, String position) {
             this.id = id;
             this.name = name;
             this.position = position;
         }
 
+        /**
+         * Function to get the employee's id
+         * @return Returns the id of the employee
+         */
         public int getId() {
             return id;
         }
 
+        /**
+         * Function to get the employee's name
+         * @return Returns the name of the employee
+         */
         public String getName() {
             return name;
         }
 
+        /**
+         * Function that prints an employee and their position
+         * @return Returns the name and position of the employee
+         */
         public String getPosition() {
             return position;
         }
 
+        /**
+         * Funtion to see if an employee is a manager to
+         * @return Returns true if the employee is a manager
+         */
         public boolean isManager() {
             return "Manager".equalsIgnoreCase(position);
         }
 
+        /**
+         * Function that prints an employee and their position
+         * @return Returns the name and position of the employee
+         */
         @Override
         public String toString() {
             return name + " - " + position;
         }
     }
-
 }
+
+
+
