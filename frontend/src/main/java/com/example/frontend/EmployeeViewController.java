@@ -1,5 +1,6 @@
 package com.example.frontend;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -22,6 +23,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -95,18 +97,37 @@ public class EmployeeViewController implements Initializable{
         // the item doesn't exist, add to the order total and summary page
         currentOrder.add(new OrderItem(menuItemId, quantity, name, price));
         Label orderName = new Label(name);
-        orderName.setPrefWidth(170);
+        orderName.setPrefWidth(165);
         orderName.wrapTextProperty().setValue(true);
+//        ImageView minus = new ImageView("com/example/frontend/images/minus.png");
+        Image minus;
+        ImageView minusViewer = new ImageView();
+        Image plus;
+        ImageView plusViewer = new ImageView();
+        try{
+            minus = new Image(new FileInputStream("frontend/src/main/resources/com/example/frontend/images/minus.png"));
+            minusViewer.setImage(minus);
+            minusViewer.setFitWidth(6);
+            minusViewer.setPreserveRatio(true);
+
+            plus = new Image(new FileInputStream("frontend/src/main/resources/com/example/frontend/images/plus.png"));
+            plusViewer.setImage(plus);
+            plusViewer.setFitWidth(9);
+            plusViewer.setPreserveRatio(true);
+        } catch (IOException e){
+            System.out.println("Troubles loading minus icon");
+        }
         Label orderQuant = new Label("" + quantity);
-        orderQuant.setPrefWidth(20);
+
+//        orderQuant.setPrefWidth(10);
         String itemPrice = String.format("$%.2f", price);
         Label orderPrice = new Label(itemPrice);
         orderPrice.setPrefWidth(50);
         HBox container = new HBox(10);
         container.setPadding(new Insets(5, 2, 5, 2));
-
+        container.setAlignment(Pos.CENTER);
         // setting the new item as a child pane so that it appears in the summary
-        container.getChildren().addAll(orderName, orderQuant, orderPrice);
+        container.getChildren().addAll(orderName, minusViewer, orderQuant, plusViewer, orderPrice);
         checkoutVbox.getChildren().add(container);
 
         orderTotalPrice += price;
