@@ -23,6 +23,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
@@ -35,12 +37,24 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.text.TextBoundsType;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+
+import javafx.scene.text.Text;
+import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.Connection;
+import javafx.scene.layout.VBox;
+import javafx.scene.control.TableView;
+import javafx.collections.ObservableList;
+
 
 public class ManagerGraphViewController implements Initializable{
     @FXML
@@ -237,13 +251,12 @@ public class ManagerGraphViewController implements Initializable{
         }
     }
 
-    public void showProductUsage(ActionEvent event){
+    public void showProductUsage(ActionEvent event) {
         graphContainer.getChildren().clear();
         ScrollPane graphScroll = new ScrollPane();
         graphContainer.getChildren().add(graphScroll);
-        String name = "";
-        int qty = 0;
-        try{
+        
+        try {
             LocalDate startDate = productStartDate.getValue();
             String start = startDate.getMonthValue() + "/" + startDate.getDayOfMonth() + "/" + startDate.getYear();
             LocalDate endDate = productEndDate.getValue();
@@ -253,24 +266,34 @@ public class ManagerGraphViewController implements Initializable{
             Statement stmt = conn.createStatement();
             ResultSet result = stmt.executeQuery(sqlStatement);
 
-            ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
-
-            while(result.next()) {
-                name = result.getString("name");
-                qty = result.getInt("inventory_used");
-                pieChartData.add(new PieChart.Data(name, qty));
+            CategoryAxis xAxis = new CategoryAxis();
+            NumberAxis yAxis = new NumberAxis();
+            BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
+            barChart.setTitle("Product Usage From: " + start + " - " + end);
+            
+            barChart.setPrefSize(700, 400);
+            xAxis.setLabel("Inventory Item");
+            yAxis.setLabel("Amount Used");
+            XYChart.Series<String, Number> series = new XYChart.Series<>();
+            barChart.setLegendVisible(false);
+            
+            while (result.next()) {
+                String name = result.getString("name");
+                int qty = result.getInt("inventory_used");
+                series.getData().add(new XYChart.Data<>(name, qty));
             }
-            PieChart chart = new PieChart(pieChartData);
-            chart.setTitle("Product Usage From: " + start + " - " + end);
-            chart.setPrefSize(600, 400);
-            graphScroll.setPadding(new Insets(20, 75, 20,75));
-            graphScroll.setContent(chart);
 
-        } catch (Exception e){
+            barChart.getData().add(series);
+            
+            graphScroll.setPadding(new Insets(20, 25, 20, 50));
+            graphScroll.setContent(barChart);
+
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error accessing Database.");
         }
     }
+
 
 
 
