@@ -130,9 +130,9 @@ public class ManagerViewController implements Initializable{
         VBox lowStockVBox = new VBox(10);
         lowStockVBox.setPrefWidth(270);
         lowStockVBox.setPadding(new Insets(25));
-        Label header = new Label("Low Stock Itmes");
+        Label header = new Label("Low Stock Items");
         header.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 22));
-        Label description = new Label("These items are low stock, we reccomend that you restock them before they run out.");
+        Label description = new Label("These items are low stock, we recommend that you restock them before they run out.");
         description.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 12));
         description.wrapTextProperty().setValue(true);
         description.setPrefWidth(285);
@@ -145,7 +145,7 @@ public class ManagerViewController implements Initializable{
         try{
             //Asking for all the menu items from the database
             Statement stmt = conn.createStatement();
-            String sqlStatement = "SELECT name, quantity, unit FROM inventory WHERE quantity < 100;";
+            String sqlStatement = "SELECT name, quantity, unit FROM inventory WHERE quantity < 100 ORDER BY quantity ASC;";
             ResultSet result = stmt.executeQuery(sqlStatement);
 
             while (result.next()) {

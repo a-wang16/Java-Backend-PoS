@@ -328,7 +328,7 @@ public class ManagerGraphViewController implements Initializable{
             LocalDate endDate = productEndDate.getValue();
             String end = endDate.getMonthValue() + "/" + endDate.getDayOfMonth() + "/" + endDate.getYear();
 
-            String sqlStatement = "SELECT i.Name, SUM(r.qty) AS inventory_used FROM Customer_Order co, Menu_Item mi JOIN Recipe r ON mi.ID = r.Menu_item JOIN Inventory i ON r.Inventory_item = i.ID WHERE Created_At >= '" + start +"' AND Created_At < '" + end +"' GROUP BY i.Name ORDER BY inventory_used DESC;";
+            String sqlStatement = "SELECT i.Name, SUM(r.qty * oi.quantity) AS inventory_used FROM Menu_Item mi JOIN Order_Items oi ON mi.ID = oi.Menu_Item_ID JOIN Customer_Order co ON co.ID = oi.Order_ID JOIN Recipe r ON mi.ID = r.Menu_item JOIN Inventory i ON r.Inventory_item = i.ID WHERE co.Created_At >= '" + start +"' AND co.Created_At < '" + end + "' GROUP BY  i.Name ORDER BY inventory_used DESC;";
             Statement stmt = conn.createStatement();
             ResultSet result = stmt.executeQuery(sqlStatement);
 
