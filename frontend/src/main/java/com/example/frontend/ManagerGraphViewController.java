@@ -246,6 +246,15 @@ public class ManagerGraphViewController implements Initializable{
                 return; 
             }
 
+            if (startDate.isAfter(endDate) || endDate.isBefore(startDate)) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Invalid Date Range.");
+                alert.setHeaderText(null);
+                alert.setContentText("The start date cannot be after the end date.");
+                alert.showAndWait();
+                return;
+            }
+
             String start = startDate.getMonthValue() + "/" + startDate.getDayOfMonth() + "/" + startDate.getYear();
             String end = endDate.getMonthValue() + "/" + endDate.getDayOfMonth() + "/" + endDate.getYear();
 
@@ -328,6 +337,15 @@ public class ManagerGraphViewController implements Initializable{
                 alert.showAndWait();
                 return; 
             }
+
+            if (startDate.isAfter(endDate) || endDate.isBefore(startDate)) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Invalid Date Range");
+                alert.setHeaderText(null);
+                alert.setContentText("The start date cannot be after the end date.");
+                alert.showAndWait();
+                return;
+            }
             String start = startDate.getMonthValue() + "/" + startDate.getDayOfMonth() + "/" + startDate.getYear();
             String end = endDate.getMonthValue() + "/" + endDate.getDayOfMonth() + "/" + endDate.getYear();
     
@@ -402,6 +420,14 @@ public class ManagerGraphViewController implements Initializable{
                 alert.setContentText("Please select both start and end dates before proceeding.");
                 alert.showAndWait();
                 return; 
+            }
+            if (startDate.isAfter(endDate) || endDate.isBefore(startDate)) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Invalid Date Range");
+                alert.setHeaderText(null);
+                alert.setContentText("The start date cannot be after the end date.");
+                alert.showAndWait();
+                return;
             }
 
             String start = startDate.getMonthValue() + "/" + startDate.getDayOfMonth() + "/" + startDate.getYear();
