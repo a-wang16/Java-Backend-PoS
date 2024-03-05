@@ -90,6 +90,12 @@ public class ManagerGraphViewController implements Initializable{
     @FXML 
     private Button backButton;
     
+    @FXML 
+    private DatePicker productStartDate2;
+    @FXML
+    private DatePicker productEndDate2;
+
+
     Connection conn;
 
 
@@ -183,43 +189,54 @@ public class ManagerGraphViewController implements Initializable{
     public void showSalesTrend(ActionEvent event){
         graphContainer.getChildren().clear();
         ScrollPane graphScroll = new ScrollPane();
-        graphScroll.setPrefWidth(750);
+        graphContainer.getChildren().add(graphScroll);
         try{
-            String sqlStatement = "SELECT EXTRACT(WEEK FROM co.Created_At) AS OrderWeek, SUM(oi.Quantity * mi.Price) AS TotalRevenue FROM Order_Items oi JOIN Menu_Item mi ON oi.Menu_Item_ID = mi.ID JOIN Customer_Order co ON oi.Order_ID = co.ID GROUP BY OrderWeek ORDER BY OrderWeek;";
+            LocalDate startDate = productStartDate2.getValue();
+            String start = startDate.getMonthValue() + "/" + startDate.getDayOfMonth() + "/" + startDate.getYear();
+            LocalDate endDate = productEndDate2.getValue();
+            String end = endDate.getMonthValue() + "/" + endDate.getDayOfMonth() + "/" + endDate.getYear();
+    
+            String sqlStatement = "SELECT mi.Name AS Menu_Item_Name, " +
+                "SUM(oi.Quantity) AS Total_Quantity_Sold " +
+                "FROM Order_Items oi " +
+                "JOIN Menu_Item mi ON oi.Menu_Item_ID = mi.ID " +
+                "JOIN Customer_Order co ON oi.Order_ID = co.ID " +
+                "WHERE co.Created_At >= '" + start + "' AND co.Created_At < '" + end + "' " +
+                "GROUP BY mi.Name " +
+                "ORDER BY Total_Quantity_Sold DESC;";
+    
             Statement stmt = conn.createStatement();
             ResultSet result = stmt.executeQuery(sqlStatement);
-
-            XYChart.Series series = new XYChart.Series();
-            int week = 0;
-            Double revenue = 0.0;
-
-            Double maxRevenue = 0.0;
-
-            while(result.next()){
-                week = result.getInt("orderweek");
-                revenue = result.getDouble("totalrevenue");
-
-                if (revenue > maxRevenue){
-                    maxRevenue = revenue;
-                }
-
-                series.getData().add(new XYChart.Data(week, revenue));
+    
+            TableView<ObservableList<String>> tableView = new TableView<>();
+            tableView.setEditable(false);
+    
+            while (result.next()) {
+                ObservableList<String> row = FXCollections.observableArrayList();
+                row.add(result.getString("Menu_Item_Name")); // Use the correct alias here
+                row.add(Integer.toString(result.getInt("Total_Quantity_Sold")));
+                tableView.getItems().add(row);
             }
-            NumberAxis xAxis = new NumberAxis(0, 52, 1);
-            NumberAxis yAxis = new NumberAxis(0, (maxRevenue * 1.10), ((maxRevenue * 1.10) / 50));
-            LineChart linechart = new LineChart(xAxis, yAxis);
-            linechart.getData().add(series);
-            linechart.setPrefWidth(900);
-            graphScroll.setContent(linechart);
-            graphContainer.getChildren().add(graphScroll);
-
+    
+            TableColumn<ObservableList<String>, String> itemNameCol = new TableColumn<>("Menu Item Name");
+            itemNameCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(0)));
+    
+            TableColumn<ObservableList<String>, String> totalQuantityCol = new TableColumn<>("Total Quantity Sold (Sales)");
+            totalQuantityCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(1)));
+    
+            itemNameCol.setPrefWidth(350);
+            totalQuantityCol.setPrefWidth(350);
+    
+            tableView.getColumns().addAll(itemNameCol, totalQuantityCol);
+    
+            graphScroll.setPadding(new Insets(20, 25, 20, 50));
+            graphScroll.setContent(tableView);
+    
+    
         } catch (Exception e){
             e.printStackTrace();
             System.out.println("Error accessing Database.");
         }
-
-
-
     }
 
     @FXML
