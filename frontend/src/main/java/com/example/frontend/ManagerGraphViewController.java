@@ -54,7 +54,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.control.TableView;
 import javafx.collections.ObservableList;
 
-
+/** 
+ * Controller file for the Manager's Graph View.
+ * Displays data from the database regarding sales trends, item usages, and other
+ * important information.
+ * @author Allen, Yohan, Gemma 
+ */
 public class ManagerGraphViewController implements Initializable{
     @FXML
     private Pane graphButtonContainer;
@@ -105,6 +110,12 @@ public class ManagerGraphViewController implements Initializable{
 
 
 
+    
+    /** 
+     * Grabs the PSQL login information from the 'config.properties' file. 
+     * Returns a Property object definied in DatabaseConnectionManager.java.
+     * @return Properties
+     */
     private Properties readProperties() {
         Properties prop = new Properties();
         try (InputStream input = StartApplication.class.getResourceAsStream("com/example/frontend/config.properties")) {
@@ -115,6 +126,11 @@ public class ManagerGraphViewController implements Initializable{
         return prop;
     }
     
+    
+    /** 
+     * Button control that returns back to the default manager view.
+     * @param event
+     */
     @FXML
     void backButtonHandle(MouseEvent event) {
         try {
@@ -133,6 +149,10 @@ public class ManagerGraphViewController implements Initializable{
         }
     }
 
+    /**
+     * Controls the user-switch button that returns to the login page to switch views.
+     * @param event
+    */
     @FXML
     void switchButton(MouseEvent event) {
         try {
@@ -153,6 +173,10 @@ public class ManagerGraphViewController implements Initializable{
         }
     }
 
+    /**
+     * One of the two controller function that closes the left sidebar.
+     * @param event
+     */
     @FXML
     void close_menu(MouseEvent event) {
         TranslateTransition slide =  new TranslateTransition();
@@ -170,6 +194,10 @@ public class ManagerGraphViewController implements Initializable{
         });
     }
 
+    /**
+     * One of the two controller function that opens the left sidebar.
+     * @param event
+     */
     @FXML
     void open_menu(MouseEvent event) {
         TranslateTransition slide =  new TranslateTransition();
@@ -187,10 +215,20 @@ public class ManagerGraphViewController implements Initializable{
         });
     }
 
+    /**
+     * Grabs the necessary Stage object for proper FXML control.
+     * @param primaryStage
+     */
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
     }
 
+
+    /**
+     * Generates the "Sales Trend" graph. Inserts FXML components into the designated graph area and
+     * reads from the inputted date range. Displays the sales by item from the order history from the database.
+     * @param event
+     */
     public void showSalesTrend(ActionEvent event) {
         graphContainer.getChildren().clear();
         ScrollPane graphScroll = new ScrollPane();
@@ -255,6 +293,12 @@ public class ManagerGraphViewController implements Initializable{
         }
     }
 
+
+    /**
+     * Generates the "Sells Together Trend" table. Displays a list of pairs of 
+     * menu items that sell together often, popular or not, sorted by most frequent.
+     * @param event
+     */
     @FXML
     public void showWhatSellsTogether(ActionEvent event){
         graphContainer.getChildren().clear();
@@ -320,6 +364,10 @@ public class ManagerGraphViewController implements Initializable{
         }
     }
 
+    /**
+     * Generates the "Product Usage" graph. Displays the amount of inventory used during that time period.
+     * @param event
+     */
     public void showProductUsage(ActionEvent event) {
         graphContainer.getChildren().clear();
         ScrollPane graphScroll = new ScrollPane();
@@ -363,6 +411,11 @@ public class ManagerGraphViewController implements Initializable{
         }
     }
 
+    /**
+     * Generates the "Excess Inventory" graph. Displays the list of items that only sold less than 10% 
+     * of their inventory between the timestamp and the current time, assuming no restocks have happened.
+     * @param event
+     */
     public void showExcessInventory(ActionEvent event) {
         graphContainer.getChildren().clear();
         ScrollPane graphScroll = new ScrollPane();
@@ -427,7 +480,10 @@ public class ManagerGraphViewController implements Initializable{
     }
 
 
-
+    /**
+     * Inital function that runs when the FXML is loaded. Sets the default values of the side bar and
+     * prepares the buttons to generated different graphs.
+     */
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
         menu_close.setVisible(false);
