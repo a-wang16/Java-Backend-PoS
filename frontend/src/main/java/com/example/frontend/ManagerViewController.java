@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 //
 import javafx.animation.TranslateTransition;
-import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -19,7 +18,6 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
@@ -32,7 +30,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -133,9 +130,9 @@ public class ManagerViewController implements Initializable{
         VBox lowStockVBox = new VBox(10);
         lowStockVBox.setPrefWidth(270);
         lowStockVBox.setPadding(new Insets(25));
-        Label header = new Label("Low Stock Itmes");
+        Label header = new Label("Low Stock Items");
         header.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 22));
-        Label description = new Label("These items are low stock, we reccomend that you restock them before they run out.");
+        Label description = new Label("These items are low stock, we recommend that you restock them before they run out.");
         description.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 12));
         description.wrapTextProperty().setValue(true);
         description.setPrefWidth(285);
@@ -148,7 +145,7 @@ public class ManagerViewController implements Initializable{
         try{
             //Asking for all the menu items from the database
             Statement stmt = conn.createStatement();
-            String sqlStatement = "SELECT name, quantity, unit FROM inventory WHERE quantity < 100;";
+            String sqlStatement = "SELECT name, quantity, unit FROM inventory WHERE quantity < 100 ORDER BY quantity ASC;";
             ResultSet result = stmt.executeQuery(sqlStatement);
 
             while (result.next()) {
@@ -357,37 +354,48 @@ public class ManagerViewController implements Initializable{
         modalVBox.getChildren().add(recipeScroll);
         modalVBox.setPadding(new Insets(20));
 
-        // Adding a new row to allow the user to enter in a new item
-        Button addItemButton = new Button("Add Item to Recipe");
-        addItemButton.setOnAction((ActionEvent e) ->{
-            TextField nameFiled = new TextField();
-            nameFiled.setPrefWidth(120);
-            nameFiled.setPromptText("Enter item name");
-            TextField quantityField = new TextField();
-            quantityField.setPromptText("Enter item quanity");
-            quantityField.setPrefWidth(80);
-            TextField unitField = new TextField();
-            unitField.setPromptText("Enter item unit");
-            unitField.setPrefWidth(120);
-            HBox newItem = new HBox(10);
-            newItem.getChildren().addAll(nameFiled, quantityField, unitField);
-            recipeContainer.getChildren().add(newItem);
-        });
+
 
         // Updating the database with the contents of the new menu item through the modal
         Button saveButton = new Button("Save");
-        saveButton.setOnAction(e -> handleMenuSaveAction(nameField.getText(), priceField.getText(), caloriesField.getText(), categoryField.getText(), modalStage));
+        saveButton.setOnAction(e -> {
+            populateCheckedItemsQuantity(recipeContainer);
+            handleMenuSaveAction(nameField.getText(), priceField.getText(), caloriesField.getText(), categoryField.getText(), modalStage);
+        });
 
-        // Setting modal contents and properties
-        HBox buttonHbox = new HBox(10);
-        buttonHbox.setAlignment(Pos.CENTER);
-        buttonHbox.getChildren().addAll(addItemButton, saveButton);
-        modalVBox.getChildren().addAll(buttonHbox);
+        saveButton.setAlignment(Pos.CENTER);
+        modalVBox.getChildren().addAll(saveButton);
 
         // Showing the modal window
         Scene modalScene = new Scene(modalVBox, 420, 400);
         modalStage.setScene(modalScene);
         modalStage.showAndWait();
+    }
+
+    private void populateCheckedItemsQuantity(VBox recipeContainer) {
+        
+        for (int i = 0; i < recipeContainer.getChildren().size(); i++) {
+            if (i >= checkedItems.size()) {
+                // Handle the case where there are more recipeContainer children than checkedItems
+                break;
+            }
+    
+            Node node = recipeContainer.getChildren().get(i);
+            if (node instanceof HBox) {
+                HBox recipeItem = (HBox) node;
+                if (recipeItem.getChildren().size() > 1 && recipeItem.getChildren().get(1) instanceof TextField) {
+                    TextField quantityField = (TextField) recipeItem.getChildren().get(1);
+                    String quantityText = quantityField.getText();
+    
+                    if (quantityText != null && !quantityText.isEmpty()) {
+                        
+                        int quantity = Integer.parseInt(quantityText);
+                        checkedItems.get(i).setQuantity(quantity);
+                       
+                    }
+                }
+            }
+        }
     }
 
     private void handleInventorySaveAction(String name, String quantity, String unit, Stage modalStage) {
@@ -456,6 +464,8 @@ public class ManagerViewController implements Initializable{
         populateLowStockPane();
     }
 
+    
+
     private void handleMenuSaveAction(String name, String price, String calories, String category, Stage modalStage) {
         System.out.println("Updating Menu Item:");
         System.out.println("Name: " + name);
@@ -467,7 +477,7 @@ public class ManagerViewController implements Initializable{
         PreparedStatement pstmtCheck = null;
         PreparedStatement pstmtUpdate = null;
         PreparedStatement pstmtInsert = null;
-    
+
         try {
             // Check if the menu item exists
             String sqlQueryToCheck = "SELECT EXISTS(SELECT 1 FROM menu_item WHERE name = ?)";
@@ -498,14 +508,67 @@ public class ManagerViewController implements Initializable{
                     System.out.println("Menu update failed. No item found with the specified name.");
                 }
             } else {
-                // SQL statement to insert a new inventory item
-                String sqlInsert = "INSERT INTO menu_item (name, price, calories, category) VALUES (?, ?, ?, ?);";
-                pstmtInsert = conn.prepareStatement(sqlInsert);
+
+                // SQL statement to insert a new menu item
+                String sqlInsertMenu = "INSERT INTO menu_item (name, price, calories, category) VALUES (?, ?, ?, ?);";
+                pstmtInsert = conn.prepareStatement(sqlInsertMenu);
                 pstmtInsert.setString(1, name);
                 pstmtInsert.setDouble(2, Double.parseDouble(price));
                 pstmtInsert.setInt(3, Integer.parseInt(calories));
                 pstmtInsert.setString(4, category);
                 pstmtInsert.executeUpdate();
+
+                // I need to get menu_item_id, inventory_item_id, qty
+                // menu_item_id can be extracted by doing select respect to menu_item_name
+
+                // i need to do a for loop for all recepie item
+                    // inventory_item_id extracted from vector
+                    // checkedItems vector gives in a format: [Bacon, Onion, Texas Toast]
+                    // qty extracted from user input
+
+
+                int menuID = -1;
+                PreparedStatement pstmt2 = conn.prepareStatement("SELECT id from menu_item where name = ?");
+                pstmt2.setString(1, name);
+                ResultSet rs2 = pstmt2.executeQuery();
+                if (rs2.next()) {
+                    menuID = rs2.getInt("id");
+                }
+
+                // Add Recepie to Menu Item
+                String sqlInsertRecipe = "INSERT INTO recipe (menu_item, inventory_item, qty) VALUES (?, ?, ?);";
+                PreparedStatement pstmt3 = conn.prepareStatement(sqlInsertRecipe);
+                for (int i = 0; i < checkedItems.size(); i++) {
+                    
+                    pstmt3.setInt(1, menuID);
+
+                    // get Inventory ID
+                    String inventoryName = checkedItems.get(i).getName();
+                    int inventoryID = -1;
+                    PreparedStatement pstmt4 = conn.prepareStatement("SELECT id from inventory where name = ?");
+                    pstmt4.setString(1, inventoryName);
+
+                    ResultSet rs4 = pstmt4.executeQuery();
+
+                    if (rs4.next()) {
+                        inventoryID = rs4.getInt("id");
+                    }
+
+                    pstmt3.setInt(2, inventoryID);
+
+                    int quantity = checkedItems.get(i).getQuantity();
+                    if (quantity < 0 || quantity > 100) {
+                        throw new IllegalArgumentException("Quantity empty");
+                    }
+                    pstmt3.setInt(3, quantity);
+
+                    pstmt3.executeUpdate();
+                }
+
+                for (int i = 0; i < checkedItems.size(); i++) {
+                    System.out.println("Recipe " + (i + 1) +" : " + checkedItems.get(i).getName() + " " + checkedItems.get(i).getQuantity() + " " + checkedItems.get(i).getUnit());
+                }
+                
                 System.out.println("New menu item created successfully.");
             }
 
@@ -515,7 +578,10 @@ public class ManagerViewController implements Initializable{
             System.out.println("Error accessing Database.");
         } catch (NumberFormatException e) {
             System.out.println("Error in number format: " + e.getMessage());
-        } finally {
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+        } 
+        finally {
             modalStage.close();
         }
     }

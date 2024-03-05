@@ -103,6 +103,7 @@
                                 <Image url="@images/back.png" />
                             </image>
                         </ImageView>
+                  <Label fx:id="userProfile" layoutX="91.0" layoutY="27.0" prefHeight="17.0" prefWidth="165.0" text="Label" />
                     </children>
                 </AnchorPane>
             </top>

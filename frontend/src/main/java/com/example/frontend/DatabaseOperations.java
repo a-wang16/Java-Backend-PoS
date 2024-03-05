@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public class DatabaseOperations {
-    private static Employee currentEmployee;
+    public static Employee currentEmployee;
 
     public static void setCurrentEmployee(Employee employee) {
         currentEmployee = employee;
@@ -192,7 +192,7 @@ public class DatabaseOperations {
     public static class Inventory {
         private final int id;
         private final String name;
-        private final int quantity;
+        private int quantity;
         private final String unit;
 
 
@@ -201,6 +201,10 @@ public class DatabaseOperations {
             this.quantity = quantity;
             this.name = name;
             this.unit = unit;
+        }
+
+        public void setQuantity(int quantity) {
+            this.quantity = quantity;
         }
 
         public String getName() {
