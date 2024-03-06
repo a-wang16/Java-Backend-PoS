@@ -497,8 +497,7 @@ public class ManagerGraphViewController implements Initializable{
             tableName.setFont(new Font(17));
             graphContainer.getChildren().add(tableName);
 
-            String sqlStatement = "SELECT i.Name, SUM(r.qty * oi.quantity) AS inventory_used, i.quantity AS current_inventory, (CAST (SUM(r.qty * oi.quantity) AS float) / (SUM(r.qty * oi.quantity) + i.quantity)) AS relative_performance FROM Menu_Item mi JOIN Order_Items oi ON mi.ID = oi.Menu_Item_ID JOIN Customer_Order co ON co.ID = oi.Order_ID JOIN Recipe r ON r.Menu_item = mi.ID JOIN Inventory i ON r.Inventory_item = i.ID WHERE co.Created_At >= '" + start + "' GROUP BY i.Name, i.quantity ORDER BY relative_performance ASC;";
-            
+            String sqlStatement = "SELECT * FROM (SELECT    name,    MAX(can_make) as can_make,    MAX(total_sold) as total_sold,   CAST(MAX(total_sold) AS FLOAT) / (MAX(total_sold) + MAX(can_make)) AS relative_sold FROM (SELECT    mi.Name,    MIN(i.quantity/r.qty) AS can_make,   CASE     WHEN mi.Name = a.Name THEN a.total_sold     ELSE 0   END AS total_sold FROM    (SELECT   mi.Name,    0 AS can_make,   SUM(oi.Quantity) AS total_sold FROM    Menu_Item mi JOIN   Order_Items oi ON mi.ID = oi.Menu_Item_ID JOIN    Customer_Order co ON co.ID = oi.Order_ID WHERE    Created_At >= '" + start + "' GROUP BY    mi.Name ORDER BY   mi.Name ASC) a,   Menu_Item mi JOIN   Recipe r ON mi.ID = r.Menu_item JOIN   Inventory i ON r.Inventory_item = i.ID GROUP BY    mi.Name,   a.Name,   a.total_sold ORDER BY   mi.Name ASC) magnusOpus GROUP BY   name) magnus2 WHERE relative_sold <= 0.1 ORDER BY relative_sold ASC;";
             Statement stmt = conn.createStatement();
             ResultSet result = stmt.executeQuery(sqlStatement);
     
@@ -509,18 +508,18 @@ public class ManagerGraphViewController implements Initializable{
             while (result.next()) {
                 ObservableList<String> row = FXCollections.observableArrayList();
                 row.add(result.getString("name"));
-                row.add(result.getString("inventory_used"));
-                row.add(result.getString("current_inventory"));
-                row.add((String.valueOf(result.getDouble("relative_performance")*100)));
+                row.add(result.getString("can_make"));
+                row.add(result.getString("total_sold"));
+                row.add((String.valueOf(result.getDouble("relative_sold")*100)));
                 tableView.getItems().add(row);
             }
             
 
-            TableColumn<ObservableList<String>, String> col1 = new TableColumn<>("Inventory Item");
+            TableColumn<ObservableList<String>, String> col1 = new TableColumn<>("Menu Item");
             col1.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(0)));
-            TableColumn<ObservableList<String>, String> col2 = new TableColumn<>("Amount Used");
+            TableColumn<ObservableList<String>, String> col2 = new TableColumn<>("Amount Left");
             col2.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(1)));
-            TableColumn<ObservableList<String>, String> col3 = new TableColumn<>("Current Amount");
+            TableColumn<ObservableList<String>, String> col3 = new TableColumn<>("Amount Sold");
             col3.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(2)));
             TableColumn<ObservableList<String>, String> col4 = new TableColumn<>("Relative Sold (%)");
             col4.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().get(3)));
