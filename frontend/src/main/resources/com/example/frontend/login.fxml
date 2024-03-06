@@ -5,29 +5,37 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="846.0" prefWidth="1245.0" spacing="10.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.frontend.LoginController">
+<VBox alignment="CENTER" prefHeight="846.0" prefWidth="1245.0" spacing="5.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.frontend.LoginController">
     <padding>
         <Insets bottom="20" left="20" right="20" top="20" />
     </padding>
 
     <VBox alignment="CENTER" prefHeight="400.0" prefWidth="400.0" spacing="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-      <Label text="POS LOGIN">
-         <VBox.margin>
-            <Insets bottom="100.0" />
-         </VBox.margin>
-         <font>
-            <Font name="System Bold" size="42.0" />
-         </font>
-      </Label>
+        <ImageView fitWidth="400" fitHeight="400">
+            <image>
+                <Image url="@images/rev.png" />
+            </image>
+        </ImageView>
+
+        <Label text="POS LOGIN">
+            <VBox.margin>
+                <Insets bottom="100.0" />
+            </VBox.margin>
+            <font>
+                <Font name="System Bold" size="42.0" />
+            </font>
+        </Label>
         <ComboBox fx:id="employeeComboBox" promptText="Select Employee" />
         <PasswordField fx:id="passwordField" prefWidth="848.0" promptText="Password">
-         <VBox.margin>
-            <Insets left="350.0" right="350.0" />
-         </VBox.margin></PasswordField>
+            <VBox.margin>
+                <Insets left="350.0" right="350.0" />
+            </VBox.margin>
+        </PasswordField>
         <Button onAction="#handleLoginAction" text="Login" />
     </VBox>
-
 </VBox>
