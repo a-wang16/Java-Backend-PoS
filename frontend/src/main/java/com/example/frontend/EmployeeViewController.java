@@ -97,7 +97,7 @@ public class EmployeeViewController implements Initializable{
         // the item doesn't exist, add to the order total and summary page
         currentOrder.add(new OrderItem(menuItemId, quantity, name, price));
         Label orderName = new Label(name);
-        orderName.setPrefWidth(165);
+        orderName.setPrefWidth(150);
         orderName.wrapTextProperty().setValue(true);
 //        ImageView minus = new ImageView("com/example/frontend/images/minus.png");
         Image minus;
@@ -107,13 +107,53 @@ public class EmployeeViewController implements Initializable{
         try{
             minus = new Image(new FileInputStream("frontend/src/main/resources/com/example/frontend/images/minus.png"));
             minusViewer.setImage(minus);
-            minusViewer.setFitWidth(6);
+            minusViewer.setFitWidth(8);
             minusViewer.setPreserveRatio(true);
+            minusViewer.setOnMouseClicked(e -> {
+                for (int i = 0; i < currentOrder.size(); i++) {
+                    OrderItem item = currentOrder.get(i);
+                    // the item already exists, just update the quantity
+                    if (item.getMenuItemId() == menuItemId) {
+                        int newQuantity = item.getQuantity() - quantity;
+
+                        orderQuantList.get(i).setText("" + newQuantity);
+                        currentOrder.set(currentOrder.indexOf(item), new OrderItem(menuItemId, newQuantity, name, price));
+                        orderTotalPrice -= price;
+
+                        // Updating the GUI
+                        String subTotal = String.format("$%.2f", orderTotalPrice);
+                        String total = String.format("$%.2f", orderTotalPrice * 1.0825);
+                        orderTotal.setText(subTotal);
+                        totalWithTax.setText(total);
+                        return;
+                    }
+                }
+            });
 
             plus = new Image(new FileInputStream("frontend/src/main/resources/com/example/frontend/images/plus.png"));
             plusViewer.setImage(plus);
             plusViewer.setFitWidth(9);
             plusViewer.setPreserveRatio(true);
+            plusViewer.setOnMouseClicked(e -> {
+                for (int i = 0; i < currentOrder.size(); i++) {
+                    OrderItem item = currentOrder.get(i);
+
+                    // the item already exists, just update the quantity
+                    if (item.getMenuItemId() == menuItemId) {
+                        int newQuantity = item.getQuantity() + quantity;
+                        orderQuantList.get(i).setText("" + newQuantity);
+                        currentOrder.set(currentOrder.indexOf(item), new OrderItem(menuItemId, newQuantity, name, price));
+                        orderTotalPrice += price;
+
+                        // Updating the GUI
+                        String subTotal = String.format("$%.2f", orderTotalPrice);
+                        String total = String.format("$%.2f", orderTotalPrice * 1.0825);
+                        orderTotal.setText(subTotal);
+                        totalWithTax.setText(total);
+                        return;
+                    }
+                }
+            });
         } catch (IOException e){
             System.out.println("Troubles loading minus icon");
         }
