@@ -46,7 +46,7 @@ import com.example.frontend.DatabaseOperations.Inventory;
  * @author Allen Wang
  * @author Gemma Goddard
  * @author Yohan Cho
- *@author Karlos Zurutuza
+ * @author Karlos Zurutuza
  */
 public class ManagerViewController implements Initializable{
 
@@ -783,6 +783,13 @@ public class ManagerViewController implements Initializable{
         }
     }
 
+    /**
+     * Initializes UI components for the manager view on application start
+     * Configures menu visibility, button actions, inventory lists, and displays user profile information.
+     * Invokes methods to populate inventory and check for low stock items.
+     * @param arg0 URL for root object
+     * @param arg1 Resources for localization
+     */
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
         menu_close.setVisible(false);
