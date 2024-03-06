@@ -40,6 +40,14 @@ import javafx.beans.value.*;
 
 import com.example.frontend.DatabaseOperations.Inventory;
 
+/**
+ * This ManagerViewController class manages the manager's screen for viewing inventory, seeing which items are low stock, adding new inventory and menu items, and updating inventory quantities.
+ * @author Jin Seok Oh
+ * @author Allen Wang
+ * @author Gemma Goddard
+ * @author Yohan Cho
+ *@author Karlos Zurutuza
+ */
 public class ManagerViewController implements Initializable{
 
     @FXML
@@ -81,6 +89,12 @@ public class ManagerViewController implements Initializable{
     ArrayList<CheckBox> checkInventory;
     ArrayList<Inventory> checkInventoryName;
     ArrayList<Inventory> checkedItems;
+
+    /**
+     * Switches the scene between the manager graph view and manager inventory page.
+     * @param event Takes in an event for when the button is clicked
+     * @return Return type void
+     */
     @FXML
     void switchSceneButtonClicked(ActionEvent event) {
         try {
@@ -103,6 +117,11 @@ public class ManagerViewController implements Initializable{
         }
     }
 
+    /**
+     * Switches the scene to the login page when the user wants to switch users
+     * @param event Takes in an event for when the button is clicked
+     * @return Return type void
+     */
     @FXML
     void switchButton(MouseEvent event) {
         try {
@@ -124,6 +143,10 @@ public class ManagerViewController implements Initializable{
         }
     }
 
+    /**
+     * Accesses the database and identifies items that are low in stock. It notifies the manager, by populating the low stock pane with items that need to be restocked soon.
+     * @return Return type void
+     */
     void populateLowStockPane(){
 
         // Setting up containers and description
@@ -172,6 +195,11 @@ public class ManagerViewController implements Initializable{
         lowStockPane.getChildren().add(inventoryScroll);
     }
 
+    /**
+     * Pops up a modal to prompt the user to enter in information for a new inventory item. It asks the user for the item's name, quantity on hand, and the unit of the item.
+     * @param event Takes in an event for when the button is clicked
+     * @return Return type void
+     */
     @FXML
     void handleAddInventoryButton(ActionEvent event) {
 
@@ -201,6 +229,12 @@ public class ManagerViewController implements Initializable{
         modalStage.setScene(modalScene);
         modalStage.showAndWait();
     }
+
+    /**
+     * Pops up a modal to allow the user to select an inventory item to increase the quantity of and enter the new amount.
+     * @param event Takes in an event for when the button is clicked
+     * @return Return type void
+     */
     @FXML
     void handleUpdateInventoryButton(ActionEvent event) {
 
@@ -269,6 +303,11 @@ public class ManagerViewController implements Initializable{
         modalStage.showAndWait();
     }
 
+    /**
+     * Function that identifies and updates the list of the checked inventory item. Used to select which items wanted to add to a new menu item.
+     *
+     * @return Return type void
+     */
     void setCheckedItems(){
         checkedItems.clear();
         for(int i = 0; i < checkInventory.size(); i++){
@@ -278,6 +317,11 @@ public class ManagerViewController implements Initializable{
         }
     }
 
+    /**
+     * Pops up a modal to prompt the user to enter in information for a new menu item. The modal asks the user for the item's name, price, calories, category, and allows the manager to insert the associated recipe.
+     * @param event Takes in an event for when the button is clicked
+     * @return Return type void
+     */
     @FXML
     void handleUpdateMenuButton(ActionEvent event) {
 
@@ -374,6 +418,11 @@ public class ManagerViewController implements Initializable{
         modalStage.showAndWait();
     }
 
+    /**
+     * Updates the checkedItems list to contain the respective quantity for each item associated with the recipe that the user entered.
+     * @param recipeContainer Takes in a vbox updated by the user that contains the quanity of each inventory item needed for a recipe
+     * @return Return type void
+     */
     private void populateCheckedItemsQuantity(VBox recipeContainer) {
         
         for (int i = 0; i < recipeContainer.getChildren().size(); i++) {
@@ -390,16 +439,22 @@ public class ManagerViewController implements Initializable{
                     String quantityText = quantityField.getText();
     
                     if (quantityText != null && !quantityText.isEmpty()) {
-                        
                         int quantity = Integer.parseInt(quantityText);
                         checkedItems.get(i).setQuantity(quantity);
-                       
                     }
                 }
             }
         }
     }
 
+    /**
+     * Updates the database with the new inventory item values
+     * @param name Name of the item to add to the database
+     * @param quantity The amount of the item to add
+     * @param unit The unit of the inventory item
+     * @param modalStage The modal stage to close once populating the database
+     * @return Return type void
+     */
     private void handleInventorySaveAction(String name, String quantity, String unit, Stage modalStage) {
         System.out.println("Updating Inventory Item:");
         System.out.println("Name: " + name);
@@ -466,8 +521,16 @@ public class ManagerViewController implements Initializable{
         populateLowStockPane();
     }
 
-    
 
+    /**
+     * Updates the database with the new menu item
+     * @param name Name of the menu item to add to the database
+     * @param price The amount of the meny item to add
+     * @param calories The calorie count of the new menu item
+     * @param category The category of the menu item
+     * @param modalStage The modal stage to close once populating the database
+     * @return Return type void
+     */
     private void handleMenuSaveAction(String name, String price, String calories, String category, Stage modalStage) {
         System.out.println("Updating Menu Item:");
         System.out.println("Name: " + name);
@@ -588,6 +651,11 @@ public class ManagerViewController implements Initializable{
         }
     }
 
+    /**
+     * Closes the vertical sidebar to hide the menu options
+     * @param event Takes in an event for when the button is clicked
+     * @return Return type void
+     */
     @FXML
     void close_menu(MouseEvent event) {
         // Setting the side menu to close when press the icon
@@ -606,6 +674,11 @@ public class ManagerViewController implements Initializable{
         });
     }
 
+    /**
+     * Opens the vertical sidebar to show the menu options
+     * @param event Takes in an event for when the button is clicked
+     * @return Return type void
+     */
     @FXML
     void open_menu(MouseEvent event) {
         // Setting the side menu to open when clicking the menu icon
@@ -624,6 +697,10 @@ public class ManagerViewController implements Initializable{
         });
     }
 
+    /**
+     * Populates the inventory quantities to the center pane by accessing the database and displaying the name, id, and quantity on hand. Is called when new items are added to show updates in the databse.
+     * @return Return type void
+     */
     public void setUpdateInventory(){
 
         // Resetting the inventory items when inventory is added or updated
