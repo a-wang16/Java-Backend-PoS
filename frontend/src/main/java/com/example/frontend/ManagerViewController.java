@@ -699,7 +699,6 @@ public class ManagerViewController implements Initializable{
 
     /**
      * Populates the inventory quantities to the center pane by accessing the database and displaying the name, id, and quantity on hand. Is called when new items are added to show updates in the databse.
-     * @return Return type void
      */
     public void setUpdateInventory(){
 
