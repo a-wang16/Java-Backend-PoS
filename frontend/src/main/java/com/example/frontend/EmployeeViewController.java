@@ -40,7 +40,10 @@ import javafx.util.Duration;
 
 import com.example.frontend.DatabaseOperations.OrderItem;
 
-
+/**
+ * This class manages the employee view page functions. 
+ * @author Yohan Cho
+ */
 public class EmployeeViewController implements Initializable{
 
     @FXML
@@ -75,7 +78,15 @@ public class EmployeeViewController implements Initializable{
 
     private ObservableList<OrderItem> currentOrder = FXCollections.observableArrayList();
 
-    // adding an item to an order
+    // adding an item to an order 
+    /**
+     * Adds an item to the current order.
+     * 
+     * @param menuItemId The ID of the menu item.
+     * @param quantity The quantity of the item.
+     * @param name The name of the item.
+     * @param price The price of the item.
+     */
     public void addItemToOrder(int menuItemId, int quantity, String name, double price) {
         for (int i = 0; i < currentOrder.size(); i++) {
             OrderItem item = currentOrder.get(i);
@@ -190,7 +201,10 @@ public class EmployeeViewController implements Initializable{
         orderQuantList.add(orderQuant);
     }
 
-    // clear out the order summary
+    
+    /**
+     * clear out the order summary
+     */
     @FXML
     void cancelOrder(){
 
@@ -202,11 +216,23 @@ public class EmployeeViewController implements Initializable{
         orderTotal.setText("$0.00");
         checkoutVbox.getChildren().clear();
     }
-
+    /**
+     * Removes an item from the current order.
+     * 
+     * @param menuItemId The ID of the menu item to remove.
+     */
     public void removeItemFromOrder(int menuItemId) {
         currentOrder.removeIf(item -> item.getMenuItemId() == menuItemId);
     }
-
+    
+    /**
+     * Updates the quantity of an item in the current order.
+     * 
+     * @param menuItemId The ID of the menu item.
+     * @param newQuantity The new quantity of the item.
+     * @param name The name of the item.
+     * @param price The price of the item.
+     */
     public void updateItemQuantityInOrder(int menuItemId, int newQuantity, String name, double price) {
         currentOrder.removeIf(item -> item.getMenuItemId() == menuItemId);
         if (newQuantity > 0) {
@@ -215,6 +241,13 @@ public class EmployeeViewController implements Initializable{
     }
 
    // Function to switch pages
+   
+   
+   /**
+    * Switches to the login page.
+    * 
+    * @param event The mouse event triggering the switch.
+    */
    @FXML
    void switchButton(MouseEvent event) {
        try {
@@ -236,7 +269,11 @@ public class EmployeeViewController implements Initializable{
        }
    }
 
-
+   /**
+    * Close menu.
+    * 
+    * @param event The mouse event trigger.
+    */
     @FXML
     void close_menu(MouseEvent event) {
         TranslateTransition slide =  new TranslateTransition();
@@ -253,7 +290,11 @@ public class EmployeeViewController implements Initializable{
             menu_open.setVisible(true);
         });
     }
-
+    /**
+    * Open menu.
+    * 
+    * @param event The mouse event trigger.
+    */
     @FXML
     void open_menu(MouseEvent event) {
         TranslateTransition slide =  new TranslateTransition();
@@ -271,11 +312,20 @@ public class EmployeeViewController implements Initializable{
         });
     }
 
+    /**
+     * Sets the primary stage of the application.
+     * 
+     * @param primaryStage The primary stage of the application.
+     */
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
     }
-
-    // Submitting an order and notifying the database
+    
+    /**
+     * Completes the current order and proceeds to payment.
+     * 
+     * @param event The mouse event triggering the order completion.
+     */
     @FXML
     void complete_order(MouseEvent event) {
         // Create a new Stage for the dialog
@@ -315,7 +365,12 @@ public class EmployeeViewController implements Initializable{
         dialogStage.showAndWait();
     }
 
-    // Setting variables
+    /**
+     * Initializes the EmployeeViewController.
+     * 
+     * @param arg0 The URL used to resolve relative paths for the root object, or null if the location is not known.
+     * @param arg1 The resource bundle to be used by this controller, or null if the root object was not found.
+     */
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
 
