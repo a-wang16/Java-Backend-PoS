@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This DatabaseOperations class manages our requests to our backend database.
+ * This DatabaseOperations class manages our requests to our database.
  * @author karlos
  */
 public class DatabaseOperations {

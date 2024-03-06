@@ -7,12 +7,27 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+
+/**
+ * This DatabaseConnectionManager manages our connection to our database. It handles using our config.properties,
+ * and using those as credentials in order to connect to our databse.
+ * @author karlos
+ */
 public class DatabaseConnectionManager {
     private static Connection connection = null;
 
+    // Private constructor to prevent instantiation
     private DatabaseConnectionManager() {
     }
 
+
+    /**
+     * Provides a global point of access to the database connection.
+     * using the properties specified in {@code config.properties}.
+     *
+     * @return An active database {@link Connection} object.
+     * @throws RuntimeException if unable to load database properties or establish a connection.
+     */
     public static Connection getConnection() {
         if (connection == null || isConnectionClosed(connection)) {
             synchronized (DatabaseConnectionManager.class) {
@@ -41,6 +56,12 @@ public class DatabaseConnectionManager {
         return connection;
     }
 
+    /**
+     * Checks if the provided database connection is closed or null.
+     *
+     * @param conn The database {@link Connection} to check.
+     * @return {@code true} if the connection is closed or null, {@code false} otherwise.
+     */
     private static boolean isConnectionClosed(Connection conn) {
         try {
             return conn == null || conn.isClosed();
@@ -49,6 +70,12 @@ public class DatabaseConnectionManager {
         }
     }
 
+    /**
+     * Reads and loads the database properties from {@code config.properties}
+     *
+     * @return A {@link Properties} object containing the database connection details.
+     * @throws RuntimeException if the properties file cannot be found or an error occurs during loading.
+     */
     private static Properties readProperties() {
         Properties prop = new Properties();
         String propFileName = "com/example/frontend/config.properties";
