@@ -106,9 +106,8 @@ public class EmployeeViewController implements Initializable{
         ImageView minusViewer = new ImageView();
         Image plus;
         ImageView plusViewer = new ImageView();
-        try{
             // Decreasing quantity by one when pressing the - icon
-            minus = new Image(new FileInputStream("frontend/src/main/resources/com/example/frontend/images/minus.png"));
+            minus = new Image(StartApplication.class.getResourceAsStream("images/minus.png"));
             minusViewer.setImage(minus);
             minusViewer.setFitWidth(8);
             minusViewer.setPreserveRatio(true);
@@ -144,7 +143,7 @@ public class EmployeeViewController implements Initializable{
             });
 
             // Increasing quantity by one when pressing the + icon
-            plus = new Image(new FileInputStream("frontend/src/main/resources/com/example/frontend/images/plus.png"));
+            plus = new Image(StartApplication.class.getResourceAsStream("images/plus.png"));
             plusViewer.setImage(plus);
             plusViewer.setFitWidth(9);
             plusViewer.setPreserveRatio(true);
@@ -168,9 +167,7 @@ public class EmployeeViewController implements Initializable{
                     }
                 }
             });
-        } catch (IOException e){
-            System.out.println("Troubles loading minus icon");
-        }
+        
         Label orderQuant = new Label("" + quantity);
 
 //        orderQuant.setPrefWidth(10);
