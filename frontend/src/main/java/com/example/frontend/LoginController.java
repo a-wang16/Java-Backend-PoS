@@ -12,10 +12,13 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * This class serves as the controller for the login view in a JavaFX application.
+ * It is responsible for initializing the login components, handling user authentication,
+ * and navigating to different views based on the user role.
+ * @author Jin Seok Oh
+ */
 public class LoginController {
-    /**
-     * This manages the actions that can be performed via login.fxml.
-     */
 
     @FXML
     private ComboBox<DatabaseOperations.Employee> employeeComboBox;
@@ -23,20 +26,26 @@ public class LoginController {
     @FXML
     private PasswordField passwordField;
 
+    /**
+     * Initializes the login form by populating the employee combo box with all available employees.
+     * It is called automatically after the FXML fields have been populated.
+     * This fetches all employees using Database operations, and populates the employeeComboBox.
+     */
     @FXML
     public void initialize() {
-        /**
-         * This fetches all employees using Database operations, and populates the employeeComboBox.
-         */
         List<DatabaseOperations.Employee> employees = DatabaseOperations.fetchAllEmployees();
         employeeComboBox.getItems().addAll(employees);
     }
 
+    /**
+     * Handles the login action triggered by the user.
+     * It authenticates the user based on the selected employee and password.
+     * If authentication is successful, it navigates to either the manager view or the employee entry view.
+     * Otherwise, it shows an error alert.
+     * This fetches all employees using Database operations, and populates the employeeComboBox.
+     */
     @FXML
     private void handleLoginAction() {
-        /**
-         * This fetches all employees using Database operations, and populates the employeeComboBox.
-         */
         DatabaseOperations.Employee selectedEmployee = employeeComboBox.getValue();
         String password = passwordField.getText();
 
@@ -53,12 +62,13 @@ public class LoginController {
         }
     }
 
-
+    /**
+     * This loads the given .fxml file given as a string. The .fxml file needs to be located within the resources
+     * directory.
+     * @param fxmlFile The name of the FXML file to load, located in the resources directory.
+     * @throws IOException If the specified FXML file cannot be loaded.
+     */
     private void openView(String fxmlFile) {
-        /**
-         * This loads the given .fxml file given as a string. The .fxml file needs to be located within the resources
-         * directory.
-         */
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
             Parent root = loader.load();
@@ -71,11 +81,13 @@ public class LoginController {
         }
     }
 
+     /**
+     * Displays an alert dialog to the user. Typically triggered by an incorrect password. It accepts
+     * @param title The title of the alert dialog.
+     * @param header The header text of the alert dialog.
+     * @param content The content text of the alert dialog.
+     */
     private void showAlert(String title, String header, String content) {
-        /**
-         * This shows an alert, typically triggered by an incorrect password.
-         * It accepts
-         */
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(header);
