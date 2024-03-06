@@ -490,7 +490,7 @@ public class ManagerGraphViewController implements Initializable{
             
             String start = startDate.getMonthValue() + "/" + startDate.getDayOfMonth() + "/" + startDate.getYear();
 
-            Label tableName = new Label("Excess Inventory Starting From: " + start);
+            Label tableName = new Label("Excess Stock Starting From: " + start);
             tableName.setMinHeight(40);
             tableName.setMinWidth(790);
             tableName.setAlignment(Pos.CENTER);
