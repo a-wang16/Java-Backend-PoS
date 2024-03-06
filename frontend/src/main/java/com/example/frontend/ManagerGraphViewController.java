@@ -473,7 +473,7 @@ public class ManagerGraphViewController implements Initializable{
     /**
      * Generates the "Excess Inventory" graph, which displays the list of items that only sold less than 10% 
      * of their inventory between the timestamp and the current time, assuming no restocks have happened.
-     * Grabs the date from user input and queries the items that has sold <10% of their stock, returning
+     * Grabs the date from user input and queries the items that has sold less than 10% of their stock, returning
      * a table of menu items, items sold, items remaining, and how much stock it sold.
      * @param event
      */
