@@ -55,9 +55,9 @@ import javafx.scene.control.TableView;
 import javafx.collections.ObservableList;
 
 /** 
- * Controller file for the Manager's Graph View.
- * Displays data from the database regarding sales trends, item usages, and other
- * important information.
+ * Controller file for the Manager's Graph View in `manager-graph-view.fxml`.
+ * Displays data from the database regarding sales trends, item usages, excess
+ * inventory, and other important trends over a user-defined time period. 
  * @author Allen, Yohan, Gemma 
  */
 public class ManagerGraphViewController implements Initializable{
@@ -112,7 +112,8 @@ public class ManagerGraphViewController implements Initializable{
 
     
     /** 
-     * Grabs the PSQL login information from the 'config.properties' file. 
+     * Grabs the PSQL login information from the 'config.properties' file to allow SQL
+     * queries to be sent and read. 
      * Returns a Property object definied in DatabaseConnectionManager.java.
      * @return Properties
      */
@@ -216,7 +217,7 @@ public class ManagerGraphViewController implements Initializable{
     }
 
     /**
-     * Grabs the necessary Stage object for proper FXML control.
+     * Grabs the necessary Stage object for proper FXML control, allowing for dynamic elements.
      * @param primaryStage
      */
     public void setPrimaryStage(Stage primaryStage) {
@@ -225,8 +226,9 @@ public class ManagerGraphViewController implements Initializable{
 
 
     /**
-     * Generates the "Sales Trend" graph. Inserts FXML components into the designated graph area and
-     * reads from the inputted date range. Displays the sales by item from the order history from the database.
+     * Generates the "Sales Trend" graph, which displays the sales by item from the order history from the database. 
+     * Reads from the inputted date range and queries the menu items sold, displaying each menu item sold,
+     * the amount sold, and the revenue generated.
      * @param event
      */
     public void showSalesTrend(ActionEvent event) {
@@ -314,8 +316,9 @@ public class ManagerGraphViewController implements Initializable{
 
 
     /**
-     * Generates the "Sells Together Trend" table. Displays a list of pairs of 
+     * Generates the "Sells Together Trend" table, which displays a list of pairs of 
      * menu items that sell together often, popular or not, sorted by most frequent.
+     * Queries the user-defined dates to check pairs of menu items by popularity.
      * @param event
      */
     @FXML
@@ -401,7 +404,9 @@ public class ManagerGraphViewController implements Initializable{
     }
 
     /**
-     * Generates the "Product Usage" graph. Displays the amount of inventory used during that time period.
+     * Generates the "Product Usage" graph, which displays the amount of inventory used during the user-defined time period.
+     * Sends a query for items sold between the two dates and generates each inventory stock used. Displays a bar graph
+     * sorted from greatest inventory used to least. 
      * @param event
      */
     public void showProductUsage(ActionEvent event) {
@@ -466,8 +471,10 @@ public class ManagerGraphViewController implements Initializable{
     }
 
     /**
-     * Generates the "Excess Inventory" graph. Displays the list of items that only sold less than 10% 
+     * Generates the "Excess Inventory" graph, which displays the list of items that only sold less than 10% 
      * of their inventory between the timestamp and the current time, assuming no restocks have happened.
+     * Grabs the date from user input and queries the items that has sold <10% of their stock, returning
+     * a table of menu items, items sold, items remaining, and how much stock it sold.
      * @param event
      */
     public void showExcessInventory(ActionEvent event) {
@@ -545,8 +552,10 @@ public class ManagerGraphViewController implements Initializable{
 
 
     /**
-     * Inital function that runs when the FXML is loaded. Sets the default values of the side bar and
+     * Inital function that runs when the FXML is loaded, which sets the default values of the side bar and
      * prepares the buttons to generated different graphs.
+     * Each button corresponds to a helper function that displays their respective graph, and
+     * displays the current user in the top-bar.
      */
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
