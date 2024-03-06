@@ -10,27 +10,36 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This DatabaseOperations class manages our requests to our backend database.
+ * @author karlos
+ */
 public class DatabaseOperations {
-    /**
-      This DatabaseOperations class manages our requests to our backend database.
-     @author karlos
-     */
+
     public static Employee currentEmployee;
 
+    /**
+     * This sets the current currEmployee to a new Employee object.
+     * @author karlos
+     */
     public static void setCurrentEmployee(Employee employee) {
         currentEmployee = employee;
     }
 
+
+    /**
+     * This returns the currentEmployee as an Employee object
+     * @author karlos
+     */
     public static Employee getCurrentEmployee() {
         return currentEmployee;
     }
 
+    /**
+     * This creates and order and updates inventory based on inventory item and a list of orderItems, and a customer name.
+     * @author karlos
+     */
     public static void createOrderAndUpdateInventory(int employeeId, List<OrderItem> orderItems, String orderCustomerName) {
-        /**
-         * This creates and order and updates inventory based on inventory item and a list of orderItems, and a customer name.
-         * @author karlos
-         */
-
         Connection conn = DatabaseConnectionManager.getConnection();
         try {
             conn.setAutoCommit(false);
@@ -126,12 +135,11 @@ public class DatabaseOperations {
             }
         }
     }
-
+    /**
+     * This confirms if the user correctly typed in their password by sending a request to our database.
+     * @author karlos
+     */
     public static boolean authenticate(String username, String password) {
-        /**
-         * This confirms if the user correctly typed in their password by sending a request to our database.
-         * @author karlos
-         */
 
         String sql = "SELECT * FROM Employee WHERE Name = ? AND Password = ?";
         try (Connection conn = DatabaseConnectionManager.getConnection();
@@ -151,12 +159,11 @@ public class DatabaseOperations {
         return false;
     }
 
+    /**
+     * This returns a list of Employee type class
+     * @author karlos
+     */
     public static List<Employee> fetchAllEmployees() {
-        /**
-         * This returns a list of Employee type class
-         * @author karlos
-         */
-
         List<Employee> employees = new ArrayList<>();
         String sql = "SELECT ID, Name, Position FROM Employee";
 
@@ -177,14 +184,28 @@ public class DatabaseOperations {
         return employees;
     }
 
+    /**
+     * Represents an item within an order, with details such as the menu item ID, quantity,
+     * name, and price of the item.
+     * This class provides methods to access these properties but does not allow modification after
+     * instantiation.
+     *
+     * @author karlos
+     */
     public static class OrderItem {
-
         private final int menuItemId;
         private final int quantity;
         private final String name;
         private final Double price;
 
-
+        /**
+         * Constructs an OrderItem with the specified characteristics.
+         *
+         * @param menuItemId the unique identifier for the menu item
+         * @param quantity the number of units of the menu item
+         * @param name the name of the menu item
+         * @param price the price of a single unit of the menu item
+         */
         public OrderItem(int menuItemId, int quantity, String name, Double price) {
             this.menuItemId = menuItemId;
             this.quantity = quantity;
@@ -192,18 +213,38 @@ public class DatabaseOperations {
             this.price = price;
         }
 
+        /**
+         * Returns the menu item ID of this order item.
+         *
+         * @return the menu item ID as an integer
+         */
         public int getMenuItemId() {
             return menuItemId;
         }
 
+        /**
+         * Returns the quantity of this order item.
+         *
+         * @return the quantity as an integer
+         */
         public int getQuantity() {
             return quantity;
         }
 
+        /**
+         * Returns the name of this order item.
+         *
+         * @return the name as a String
+         */
         public String getName() {
             return name;
         }
 
+        /**
+         * Returns the price of this order item.
+         *
+         * @return the price as a Double
+         */
         public Double getPrice() {
             return price;
         }
