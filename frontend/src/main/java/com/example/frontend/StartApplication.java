@@ -37,7 +37,6 @@ public class StartApplication extends Application {
      *
      * @param args Command line arguments passed to the launch method.
      */
-
     public static void main(String[] args) {
         launch();
     }
