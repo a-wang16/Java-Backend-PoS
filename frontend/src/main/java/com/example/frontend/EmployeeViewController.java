@@ -69,6 +69,8 @@ public class EmployeeViewController implements Initializable{
     private Label userProfile;
     private Boolean employeeView;
     ArrayList<Label> orderQuantList;
+
+    ArrayList<HBox> orderHbox;
     Connection conn;
 
     private ObservableList<OrderItem> currentOrder = FXCollections.observableArrayList();
@@ -105,6 +107,7 @@ public class EmployeeViewController implements Initializable{
         Image plus;
         ImageView plusViewer = new ImageView();
         try{
+            // Decreasing quantity by one when pressing the - icon
             minus = new Image(new FileInputStream("frontend/src/main/resources/com/example/frontend/images/minus.png"));
             minusViewer.setImage(minus);
             minusViewer.setFitWidth(8);
@@ -114,12 +117,22 @@ public class EmployeeViewController implements Initializable{
                     OrderItem item = currentOrder.get(i);
                     // the item already exists, just update the quantity
                     if (item.getMenuItemId() == menuItemId) {
+
                         int newQuantity = item.getQuantity() - quantity;
 
-                        orderQuantList.get(i).setText("" + newQuantity);
-                        currentOrder.set(currentOrder.indexOf(item), new OrderItem(menuItemId, newQuantity, name, price));
-                        orderTotalPrice -= price;
+                        if(newQuantity == 0){
+                            orderQuantList.remove(i);
+                            currentOrder.remove(i);
+                            checkoutVbox.getChildren().remove(i);
+                        }
+                        else{
+                            orderQuantList.get(i).setText("" + newQuantity);
+                            currentOrder.set(currentOrder.indexOf(item), new OrderItem(menuItemId, newQuantity, name, price));
+                        }
 
+
+
+                        orderTotalPrice -= price;
                         // Updating the GUI
                         String subTotal = String.format("$%.2f", orderTotalPrice);
                         String total = String.format("$%.2f", orderTotalPrice * 1.0825);
@@ -130,6 +143,7 @@ public class EmployeeViewController implements Initializable{
                 }
             });
 
+            // Increasing quantity by one when pressing the + icon
             plus = new Image(new FileInputStream("frontend/src/main/resources/com/example/frontend/images/plus.png"));
             plusViewer.setImage(plus);
             plusViewer.setFitWidth(9);
@@ -169,6 +183,7 @@ public class EmployeeViewController implements Initializable{
         // setting the new item as a child pane so that it appears in the summary
         container.getChildren().addAll(orderName, minusViewer, orderQuant, plusViewer, orderPrice);
         checkoutVbox.getChildren().add(container);
+//        orderHbox.add(container);
 
         orderTotalPrice += price;
         String subTotal = String.format("$%.2f", orderTotalPrice);
@@ -323,6 +338,7 @@ public class EmployeeViewController implements Initializable{
 
 
         orderQuantList = new ArrayList<>();
+        orderHbox = new ArrayList<>();
 
 
         // Setting the order total
