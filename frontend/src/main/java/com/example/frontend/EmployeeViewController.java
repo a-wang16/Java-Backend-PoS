@@ -40,7 +40,10 @@ import javafx.util.Duration;
 
 import com.example.frontend.DatabaseOperations.OrderItem;
 
-
+/**
+ * This class manages the employee view page functions. 
+ * @author Yohan Cho
+ */
 public class EmployeeViewController implements Initializable{
 
     @FXML
