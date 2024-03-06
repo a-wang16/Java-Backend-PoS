@@ -13,9 +13,3 @@ To connect to the database:
 psql -h URL -U USERNAME -d DATABASE
 ```
 
-
-```
-COPY (SELECT name FROM teams )
-    TO '/your_custom_path/test_file.csv'
-    WITH (FORMAT CSV, HEADER);
-```
